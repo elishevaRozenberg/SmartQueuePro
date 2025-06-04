@@ -1,0 +1,13 @@
+# VS Code settings folder
+.vscode/
+
+# Node modules (אם יש בפרויקט שלך)
+node_modules/
+
+# Build output folders (תלוי בסוג הפרויקט שלך)
+dist/
+build/
+
+# System files
+.DS_Store
+Thumbs.db
