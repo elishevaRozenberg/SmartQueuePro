@@ -1,0 +1,65 @@
+{
+  "users": [
+    {
+      "username": "john_doe",
+      "email": "john@example.com",
+      "password_hash": "$2b$10$abcde12345fghijk67890lmnopqrs", 
+      "full_name": "John Doe",
+      "role": "client"
+    },
+    {
+      "username": "secretary1",
+      "email": "sec1@example.com",
+      "password_hash": "$2b$10$abcde12345fghijk67890lmnopqrs",
+      "full_name": "Secretary One",
+      "role": "secretary"
+    },
+    {
+      "username": "admin_user",
+      "email": "admin@example.com",
+      "password_hash": "$2b$10$abcde12345fghijk67890lmnopqrs",
+      "full_name": "Admin User",
+      "role": "admin"
+    }
+  ],
+  "queues": [
+    {
+      "name": "Reception Queue",
+      "description": "Queue for general reception",
+      "location": "Front Desk"
+    },
+    {
+      "name": "Customer Support Queue",
+      "description": "Queue for customer support services",
+      "location": "Support Office"
+    }
+  ],
+  "calls": [
+    {
+      "queue_id": 1,
+      "number": 1,
+      "user_id": 1,
+      "status": "waiting"
+    },
+    {
+      "queue_id": 2,
+      "number": 1,
+      "user_id": 2,
+      "status": "called"
+    }
+  ],
+  "statistics": [
+    {
+      "queue_id": 1,
+      "date": "2025-06-07",
+      "avg_wait_time": 5,
+      "calls_count": 10
+    },
+    {
+      "queue_id": 2,
+      "date": "2025-06-07",
+      "avg_wait_time": 7,
+      "calls_count": 8
+    }
+  ]
+}
