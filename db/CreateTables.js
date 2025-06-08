@@ -1,24 +1,10 @@
-// DB/CreateTables.js
-const mysql = require('mysql2/promise');
-
-// הגדרות חיבור ל-DB
-const config = {
-  user: "root",
-  password: "elisheva",  // שים כאן את הסיסמה שלך
-  host: "127.0.0.1",
-  port: 3306,
-  database: "SmartQueuePro"
-};
-const con = mysql.createConnection(config);
-
+const pool = require('./connection');
 
 async function createTables() {
   let connection;
   try {
-    // פותחים חיבור
-    connection = await mysql.createConnection(config);
+    connection = await pool.getConnection();
 
-    // טבלת משתמשים
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,7 +18,6 @@ async function createTables() {
       );
     `);
 
-    // טבלת תורים
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS queues (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -44,7 +29,6 @@ async function createTables() {
       );
     `);
 
-    // טבלת קריאות בתור
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS calls (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,7 +44,6 @@ async function createTables() {
       );
     `);
 
-    // טבלת סטטיסטיקות
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS statistics (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -76,11 +59,12 @@ async function createTables() {
 
     console.log("All tables created successfully!");
   } catch (err) {
-    console.error("Error creating tables:", err);
+    console.error("Error while creating tables:", err.message);
   } finally {
-    if (connection) await connection.end();
+    if (connection) connection.release();
   }
+  await pool.end();
+  console.log("Connection closed.");
 }
 
-// מריצים את הפונקציה
 createTables();

@@ -1,39 +1,9 @@
 const fs = require('fs');
-const mysql = require('mysql2');
+const pool = require('../db/connection');
 
-// יצירת חיבור למסד הנתונים
-// const con = mysql.createConnection({
-//   host: 'localhost',
-//   user: 'root',
-//   password: 'root',
-//   database: 'SmartQueuePro'
-// });
-
-const config = {
-  user: "root",
-  password: "elisheva",
-  host: "127.0.0.1",
-  port: 3306,
-  database: "SmartQueuePro"
-};
-
-const con = mysql.createConnection(config);
-
-
-// התחברות למסד הנתונים
-con.connect(function (err) {
-  if (err) throw err;
-  console.log("Connected to database SmartQueuePro");
-  loadData();
-});
-
-function loadData() {
-  fs.readFile('DB.JSON', 'utf8', async (err, jsonData) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return;
-    }
-
+async function loadData() {
+  try {
+    const jsonData = await fs.promises.readFile('DB.JSON', 'utf8');
     const data = JSON.parse(jsonData);
 
     const sqlInsertUser = `
@@ -56,75 +26,88 @@ function loadData() {
       VALUES (?, ?, ?, ?)
     `;
 
-    // הפיכת query לפורמט Promise
-    const queryAsync = (sql, params) => {
-      return new Promise((resolve, reject) => {
-        con.query(sql, params, (err, results) => {
-          if (err) {
-            if (err.code === 'ER_DUP_ENTRY') {
-              console.warn(`Duplicate entry ignored: ${err.sqlMessage}`);
-              return resolve();
-            }
-            return reject(err);
-          }
-          resolve(results);
-        });
-      });
-    };
+    const connection = await pool.getConnection();
 
     try {
-      const allQueries = [];
-
-      // הכנסת משתמשים
       for (const user of data.users) {
-        allQueries.push(queryAsync(sqlInsertUser, [
-          user.username,
-          user.email,
-          user.password_hash,
-          user.full_name,
-          user.role
-        ]));
+        try {
+          await connection.execute(sqlInsertUser, [
+            user.username,
+            user.email,
+            user.password_hash,
+            user.full_name,
+            user.role
+          ]);
+        } catch (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            console.warn(`Duplicate user entry ignored: ${err.sqlMessage}`);
+          } else {
+            throw err;
+          }
+        }
       }
 
-      // הכנסת תורים
       for (const queue of data.queues) {
-        allQueries.push(queryAsync(sqlInsertQueue, [
-          queue.name,
-          queue.description,
-          queue.location
-        ]));
+        try {
+          await connection.execute(sqlInsertQueue, [
+            queue.name,
+            queue.description,
+            queue.location
+          ]);
+        } catch (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            console.warn(`Duplicate queue entry ignored: ${err.sqlMessage}`);
+          } else {
+            throw err;
+          }
+        }
       }
 
-      // הכנסת קריאות בתור
       for (const call of data.calls) {
-        allQueries.push(queryAsync(sqlInsertCall, [
-          call.queue_id,
-          call.number,
-          call.user_id,
-          call.status
-        ]));
+        try {
+          await connection.execute(sqlInsertCall, [
+            call.queue_id,
+            call.number,
+            call.user_id,
+            call.status
+          ]);
+        } catch (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            console.warn(`Duplicate call entry ignored: ${err.sqlMessage}`);
+          } else {
+            throw err;
+          }
+        }
       }
 
-      // הכנסת סטטיסטיקות
       for (const stat of data.statistics) {
-        allQueries.push(queryAsync(sqlInsertStatistic, [
-          stat.queue_id,
-          stat.date,
-          stat.avg_wait_time,
-          stat.calls_count
-        ]));
+        try {
+          await connection.execute(sqlInsertStatistic, [
+            stat.queue_id,
+            stat.date,
+            stat.avg_wait_time,
+            stat.calls_count
+          ]);
+        } catch (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            console.warn(`Duplicate statistic entry ignored: ${err.sqlMessage}`);
+          } else {
+            throw err;
+          }
+        }
       }
 
-      await Promise.all(allQueries);
       console.log("All data inserted successfully.");
 
-    } catch (err) {
-      console.error("Error during data insertion:", err);
     } finally {
-      con.end((err) => {
-        if (err) console.error("Error closing connection:", err);
-        else console.log("Connection closed.");
-      });
+      connection.release();
     }
-  });
+    await pool.end();
+    console.log("Connection closed.");
+
+  } catch (err) {
+    console.error("Error during data insertion:", err);
+  }
 }
+
+loadData();
