@@ -63,8 +63,8 @@ async function createTables() {
   } finally {
     if (connection) connection.release();
   }
-  await pool.end();
-  console.log("Connection closed.");
+  // await pool.end();
+  // console.log("Connection closed.");
 }
 
 createTables();

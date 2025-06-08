@@ -102,8 +102,8 @@ async function loadData() {
     } finally {
       connection.release();
     }
-    await pool.end();
-    console.log("Connection closed.");
+    // await pool.end();
+    // console.log("Connection closed.");
 
   } catch (err) {
     console.error("Error during data insertion:", err);
