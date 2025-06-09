@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { create } = require("../controllers/usersController");
-const dynamicCheckAbilities = require("../Middlewares/dynamicCheckAbilities");
+const { create } = require("../controllers/userController");
+ const dynamicCheckAbilities = require("../Middlewares/dynamicCheckAbilities");
 
 router.use(express.json());
 
