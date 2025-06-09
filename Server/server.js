@@ -4,6 +4,8 @@ const userRoutes = require('./routes/userRoutes');
 const queueRoutes = require('./routes/queueRoutes');
 const callRoutes = require('./routes/callRoutes');  
 const statisticsRoutes = require('./routes/statisticsRoutes');
+const SignUpRoute = require('./routes/signUpRoute');
+const SignInRoute = require('./routes/signInRoute');
 const mysql = require('mysql2');  
 const PORT = process.env.PORT || 3000;
 
@@ -17,11 +19,16 @@ const PORT = process.env.PORT || 3000;
 
 
 
+
+
+
 app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/queues', queueRoutes);
 app.use('/api/calls', callRoutes); 
 app.use('/api/statistics', statisticsRoutes);
+app.use('/api/users', SignUpRoute);
+app.use('/api/users', SignInRoute);
 
 
 // // בדיקה שחיבור ל-DB תקין
