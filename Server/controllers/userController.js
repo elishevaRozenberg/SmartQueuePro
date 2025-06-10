@@ -27,6 +27,7 @@
 
 
 const userService = require('../services/userService');
+const bcrypt = require("bcrypt");
 
 // Create User
 exports.createUser = async (req, res) => {
@@ -106,5 +107,131 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error deleting user' });
+  }
+};
+
+
+// exports.getByPasswordAndUserName = async (req, res) => {
+//   try {
+//     const { username, password } = req.body;
+//     if (!username || !password) {
+//       return res.status(400).json({ message: 'Missing username or password' });
+//     }
+
+//     const result = await userService.getUserByPasswordAndUserName(username);
+//     const user = result[0];
+
+//     if (!user) {
+//       return res.status(404).json({
+//         message: 'User does not exist in the system.'
+//       });
+//     }
+
+//     if (!user.role) {
+//       user.role = 'Client';
+//     }
+
+//     const passwordMatch = bcrypt.compareSync(password, user.password);
+//     if (!passwordMatch) {
+//       return res.status(401).json({ message: 'The password or username is incorrect' });
+//     }
+
+//     const { password: _password, ...userWithoutPassword } = user;
+//     const abilities = defineAbilitiesFor(user.role);
+
+//     res.json({ ...userWithoutPassword, abilities });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Error authenticating user' });
+//   }
+// };
+
+
+// exports.getByPasswordAndUserName = async (req, res) => {
+//   try {
+//     const { username, password } = req.body;
+
+//     if (!username || !password) {
+//       return res.status(400).json({
+//         message: "Missing username or password",
+//       });
+//     }
+
+//     const user = await userService.getUserByPasswordAndUserName(username);
+
+//     if (!user) {
+//       return res.status(404).json({
+//         message: "User does not exist in the system.",
+//       });
+//     }
+
+//     if (!user.role) {
+//       user.role = "Client";
+//     }
+
+//     const passwordMatch = bcrypt.compareSync(password, user.password);
+//     if (!passwordMatch) {
+//       return res
+//         .status(401)
+//         .json({ message: "The password or username is incorrect" });
+//     }
+
+//     const { password: _password, ...userWithoutPassword } = user;
+//     // const abilities = defineAbilitiesFor(user.role);
+
+//     res.json({ ...userWithoutPassword, abilities });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Error authenticating user" });
+//   }
+// };
+
+
+
+exports.getByPasswordAndUserName = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({
+        message: "Missing username or password",
+      });
+    }
+
+    const user = await userService.getUserByPasswordAndUserName(username);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User does not exist in the system. Please sign up first.",
+      });
+    }
+
+    const passwordMatch = bcrypt.compareSync(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({
+        message: "The password or username is incorrect",
+      });
+    }
+
+    // הגדרת ברירת מחדל לתפקיד אם חסר
+    if (!user.role) {
+      user.role = "Client";
+    }
+
+    // הסרת הסיסמה לפני החזרה
+    const { password: _password, ...userWithoutPassword } = user;
+
+    // שמירת המשתמש בסשן
+    req.session.user = {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    };
+
+    // החזרת פרטי המשתמש ללא הסיסמה
+    res.status(200).json(userWithoutPassword);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error authenticating user" });
   }
 };

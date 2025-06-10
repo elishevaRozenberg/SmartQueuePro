@@ -1,4 +1,4 @@
-const checkAbilities = require("../Middlewares/checkAbilities");
+const checkAbilities = require("../middlewares/checkAbilities");
 
 const dynamicCheckAbilities = (req, res, next) => {
   const user = req.session.user;

@@ -52,3 +52,22 @@ exports.deleteUser = async (id) => {
   const [result] = await pool.execute(`DELETE FROM users WHERE id = ?`, [id]);
   return result.affectedRows > 0;
 };
+
+
+
+exports.getUserByPasswordAndUserName = async (username) => {
+  try {
+    const sql = `
+      SELECT password_hash AS password, email, full_name AS name, username, id, role
+      FROM users
+      WHERE username = ?
+    `;
+    const [rows] = await pool.execute(sql, [username]);
+    const user = rows[0] || null;
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
