@@ -1,7 +1,7 @@
-const { AbilityBuilder, Ability } = require("@casl/ability");
+const { AbilityBuilder, createMongoAbility } = require("@casl/ability");
 
 const defineAbilitiesFor = (user) => {
-  const { can, cannot, build } = new AbilityBuilder(Ability);
+  const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
 
   if (!user || !user.role) {
     cannot("manage", "all");
@@ -11,18 +11,21 @@ const defineAbilitiesFor = (user) => {
         can("manage", "all");
         break;
 
-      case "secretary":
-        can("read", "Appointments");
-        can("create", "Appointments");
-        can("update", "Appointments");
-        can("delete", "Appointments");
-        can("read", "Users");
+      case "worker":
+        can("read", "Client");
+        can("read", "Call");
+        can("delete", "Call");
+        can("update", "Call");
+        can("createAsClient", "Call");
+        can("view", "Statistics");
+        can("updateOwn", "Profile");
         break;
 
       case "client":
-        can("create", "Appointments");
-        can("read", "Appointments", { userId: user.id });
-        can("delete", "Appointments", { userId: user.id });
+        can("create", "Call");
+        can("deleteOwn", "Call");
+        can("view", "Statistics");
+        can("updateOwn", "Profile");
         break;
 
       default:

@@ -1,22 +1,22 @@
-const { ForbiddenError } = require("@casl/ability");
-const { defineAbilitiesFor } = require("./abilities");
+const { defineAbilitiesFor } = require('../abilities'); // נתיב לקובץ abilities.js שלך
+const { ForbiddenError } = require('@casl/ability');
 
-const checkAbilities = (action, subject) => (req, res, next) => {
-  const user = req.session && req.session.user;
-  
-  if (!user || !user.role) {
-    return res.status(403).send({ message: "User not authenticated" });
-  }
 
-  const ability = defineAbilitiesFor(user);
+const checkAbilities = (action, subject) => {
+  return (req, res, next) => {
+    if (!req.session.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
-  try {
-    ForbiddenError.from(ability).throwUnlessCan(action, subject);
-    next();
-  } catch (error) {
-    res.status(403).send({ message: "Access Denied", error: error.message });
-  }
+    const ability = defineAbilitiesFor(req.session.user);
+
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(action, subject);
+      next();
+    } catch (error) {
+      res.status(403).json({ error: 'Forbidden' });
+    }
+  };
 };
-
 
 module.exports = checkAbilities;

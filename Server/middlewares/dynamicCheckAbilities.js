@@ -1,32 +1,22 @@
 const checkAbilities = require("../middlewares/checkAbilities");
+const { defineAbilitiesFor } = require('./abilities');
+const { ForbiddenError } = require('@casl/ability');
 
-const dynamicCheckAbilities = (req, res, next) => {
-  const user = req.session.user;
+const dynamicCheckAbilities = (action, subject) => {
+  return (req, res, next) => {
+    if (!req.session.user) {
+      return res.status(401).json({ error: 'Unauthorized - not logged in' });
+    }
 
-  if (!user || !user.role) {
-    return res.status(403).send({ message: "User not authenticated" });
-  }
+    const ability = defineAbilitiesFor(req.session.user);
 
-  let subject;
-
-  switch (user.role) {
-    case "client":
-      subject = "Clients";
-      break;
-    case "secretary":
-      subject = "Appointments";  // נניח שמזכירה אחראית על ניהול תורים
-      break;
-    case "admin":
-      subject = "AdminPanel";    // לדוגמה — גישה לניהול המערכת
-      break;
-    default:
-      subject = "General";       // גישה מוגבלת כברירת מחדל
-      break;
-  }
-
-  // קורא ל-checkAbilities עם הפעולה והישות המתאימה
-  const abilityMiddleware = checkAbilities("create", subject);
-  abilityMiddleware(req, res, next);
+    try {
+      ForbiddenError.from(ability).throwUnlessCan(action, subject);
+      next();
+    } catch (error) {
+      return res.status(403).json({ error: 'Forbidden - no permission' });
+    }
+  };
 };
 
 module.exports = dynamicCheckAbilities;
