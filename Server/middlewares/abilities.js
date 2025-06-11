@@ -1,4 +1,4 @@
-const { AbilityBuilder, createMongoAbility } = require("@casl/ability");
+const { AbilityBuilder, createMongoAbility } = require("@casl/ability");       
 
 const defineAbilitiesFor = (user) => {
   const { can, cannot, build } = new AbilityBuilder(createMongoAbility);

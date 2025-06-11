@@ -1,42 +1,19 @@
-// // controllers/userController.js
-// const userService = require('../services/userService');
-
-// exports.createUser = async (req, res) => {
-//   try {
-//     const { username, email, password, full_name, role } = req.body;
-//     // בדיקת שדות חובה (לדוגמה)
-//     if (!username || !email || !password) {
-//       return res.status(400).json({ message: 'חסר שדה חובה' });
-//     }
-
-//     // קריאה לסרוויס
-//     const newUser = await userService.createUser({
-//       username,
-//       email,
-//       password,
-//       full_name,
-//       role
-//     });
-
-//     res.status(201).json(newUser);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'שגיאה ביצירת משתמש' });
-//   }
-// };
-
-
 const userService = require('../services/userService');
 const bcrypt = require("bcrypt");
+const {checkEmail,checkPassword,checkUserExists} = require("../middlewares/verification.js");
+
 
 // Create User
 exports.createUser = async (req, res) => {
+  // checkEmail, checkPassword,checkUserExists,
+
   try {
-    const { username, email, password, full_name, role } = req.body;
+    const { username, email, password, full_name } = req.body;
     if (!username || !email || !password) {
       return res.status(400).json({ message: 'Missing required field' });
     }
 
+    const role= req.body.role || 'Client'; 
     const newUser = await userService.createUser({
       username,
       email,
@@ -109,83 +86,6 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Error deleting user' });
   }
 };
-
-
-// exports.getByPasswordAndUserName = async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
-//     if (!username || !password) {
-//       return res.status(400).json({ message: 'Missing username or password' });
-//     }
-
-//     const result = await userService.getUserByPasswordAndUserName(username);
-//     const user = result[0];
-
-//     if (!user) {
-//       return res.status(404).json({
-//         message: 'User does not exist in the system.'
-//       });
-//     }
-
-//     if (!user.role) {
-//       user.role = 'Client';
-//     }
-
-//     const passwordMatch = bcrypt.compareSync(password, user.password);
-//     if (!passwordMatch) {
-//       return res.status(401).json({ message: 'The password or username is incorrect' });
-//     }
-
-//     const { password: _password, ...userWithoutPassword } = user;
-//     const abilities = defineAbilitiesFor(user.role);
-
-//     res.json({ ...userWithoutPassword, abilities });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Error authenticating user' });
-//   }
-// };
-
-
-// exports.getByPasswordAndUserName = async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
-
-//     if (!username || !password) {
-//       return res.status(400).json({
-//         message: "Missing username or password",
-//       });
-//     }
-
-//     const user = await userService.getUserByPasswordAndUserName(username);
-
-//     if (!user) {
-//       return res.status(404).json({
-//         message: "User does not exist in the system.",
-//       });
-//     }
-
-//     if (!user.role) {
-//       user.role = "Client";
-//     }
-
-//     const passwordMatch = bcrypt.compareSync(password, user.password);
-//     if (!passwordMatch) {
-//       return res
-//         .status(401)
-//         .json({ message: "The password or username is incorrect" });
-//     }
-
-//     const { password: _password, ...userWithoutPassword } = user;
-//     // const abilities = defineAbilitiesFor(user.role);
-
-//     res.json({ ...userWithoutPassword, abilities });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Error authenticating user" });
-//   }
-// };
-
 
 
 exports.getByPasswordAndUserName = async (req, res) => {

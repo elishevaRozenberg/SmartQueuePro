@@ -1,5 +1,5 @@
 const checkAbilities = require("../middlewares/checkAbilities");
-const { defineAbilitiesFor } = require('./abilities');
+const { defineAbilitiesFor } = require('../middlewares/abilities');
 const { ForbiddenError } = require('@casl/ability');
 
 const dynamicCheckAbilities = (action, subject) => {

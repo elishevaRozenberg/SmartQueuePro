@@ -1,4 +1,4 @@
-const pool = require('../db/connection');
+const pool = require('../../db/connection');
 
 const checkEmail = (req, res, next) => {
   const email = req.body.email;

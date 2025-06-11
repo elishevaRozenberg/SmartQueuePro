@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const statisticsController = require('../controllers/statisticsController');
+const {getAllStatistics, createStatistic, getStatisticById, updateStatistic, deleteStatistic} = require('../controllers/statisticsController');
 
-router.get('/', statisticsController.getAllStatistics);
-router.post('/', statisticsController.createStatistic);
-router.get('/:id', statisticsController.getStatisticById);
-router.put('/:id', statisticsController.updateStatistic);
-router.delete('/:id', statisticsController.deleteStatistic);
+router.get('/',getAllStatistics);
+router.post('/', createStatistic);
+router.get('/:id', getStatisticById);
+router.put('/:id', updateStatistic);
+router.delete('/:id', deleteStatistic);
 
 module.exports = router;

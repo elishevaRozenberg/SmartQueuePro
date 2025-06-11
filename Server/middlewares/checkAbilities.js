@@ -1,5 +1,7 @@
-const { defineAbilitiesFor } = require('../abilities'); // נתיב לקובץ abilities.js שלך
+const { defineAbilitiesFor } = require('./abilities'); // נתיב לקובץ abilities.js שלך
 const { ForbiddenError } = require('@casl/ability');
+const express = require("express");
+
 
 
 const checkAbilities = (action, subject) => {
