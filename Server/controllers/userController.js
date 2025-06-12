@@ -1,11 +1,10 @@
-const userService = require('../services/userService');
+const userModel = require('../models/userModel');
 const bcrypt = require("bcrypt");
-const {checkEmail,checkPassword,checkUserExists} = require("../middlewares/verification.js");
+
 
 
 // Create User
 exports.createUser = async (req, res) => {
-  // checkEmail, checkPassword,checkUserExists,
 
   try {
     const { username, email, password, full_name } = req.body;
@@ -14,7 +13,7 @@ exports.createUser = async (req, res) => {
     }
 
     const role= req.body.role || 'Client'; 
-    const newUser = await userService.createUser({
+    const newUser = await userModel.createUser({
       username,
       email,
       password,
@@ -32,7 +31,7 @@ exports.createUser = async (req, res) => {
 // Get All Users
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
+    const users = await userModel.getAllUsers();
     res.json(users);
   } catch (error) {
     console.error(error);
@@ -44,7 +43,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await userService.getUserById(id);
+    const user = await userModel.getUserById(id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -56,15 +55,39 @@ exports.getUserById = async (req, res) => {
 };
 
 // Update User
+// exports.updateUser = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { username, email, full_name } = req.body ||{};
+//      if (!username || !email || !full_name) {
+//       return res.status(400).json({ message: 'Missing required field' });
+//     }
+
+//     const updatedUser = await userModel.updateUser(id, { username, email, full_name});
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+//     res.json(updatedUser);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Error updating user' });
+//   }
+// };
+
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, email, full_name, role } = req.body;
-    //לבדוק הרשאות
-    const updatedUser = await userService.updateUser(id, { username, email, full_name, role });
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
+    const newData = req.body || {};
+
+    if (Object.keys(newData).length === 0) {
+      return res.status(400).json({ message: 'No fields provided for update' });
     }
+
+    const updatedUser = await userModel.updateUser(id, newData);
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found or nothing to update' });
+    }
+
     res.json(updatedUser);
   } catch (error) {
     console.error(error);
@@ -72,11 +95,12 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+
 // Delete User
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await userService.deleteUser(id);
+    const deleted = await userModel.deleteUser(id);
     if (!deleted) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -98,7 +122,7 @@ exports.getByPasswordAndUserName = async (req, res) => {
       });
     }
 
-    const user = await userService.getUserByPasswordAndUserName(username);
+    const user = await userModel.getUserByPasswordAndUserName(username);
 
     if (!user) {
       return res.status(404).json({

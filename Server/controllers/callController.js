@@ -1,4 +1,4 @@
-const callService = require('../services/callService');
+const callModel = require('../models/callModel');
 
 exports.createCall = async (req, res) => {
   try {
@@ -7,7 +7,7 @@ exports.createCall = async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields: queue_id or number' });
     }
 
-    const newCall = await callService.createCall({ queue_id, number, user_id, status });
+    const newCall = await callModel.createCall({ queue_id, number, user_id, status });
     res.status(201).json(newCall);
   } catch (error) {
     console.error(error);
@@ -17,7 +17,7 @@ exports.createCall = async (req, res) => {
 
 exports.getAllCalls = async (req, res) => {
   try {
-    const calls = await callService.getAllCalls();
+    const calls = await callModel.getAllCalls();
     res.json(calls);
   } catch (error) {
     console.error(error);
@@ -28,7 +28,7 @@ exports.getAllCalls = async (req, res) => {
 exports.getCallById = async (req, res) => {
   try {
     const { id } = req.params;
-    const call = await callService.getCallById(id);
+    const call = await callModel.getCallById(id);
     if (!call) {
       return res.status(404).json({ message: 'Call not found' });
     }
@@ -44,7 +44,7 @@ exports.updateCall = async (req, res) => {
     const { id } = req.params;
     const { queue_id, number, user_id, status, called_at, served_at } = req.body;
 
-    const updatedCall = await callService.updateCall(id, { queue_id, number, user_id, status, called_at, served_at });
+    const updatedCall = await callModel.updateCall(id, { queue_id, number, user_id, status, called_at, served_at });
     if (!updatedCall) {
       return res.status(404).json({ message: 'Call not found' });
     }
@@ -58,7 +58,7 @@ exports.updateCall = async (req, res) => {
 exports.deleteCall = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await callService.deleteCall(id);
+    const deleted = await callModel.deleteCall(id);
     if (!deleted) {
       return res.status(404).json({ message: 'Call not found' });
     }

@@ -1,14 +1,14 @@
 const pool = require('../../db/connection');
 
-const checkEmail = (req, res, next) => {
-  const email = req.body.email;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const checkEmail = (req, res, next) => {
+    const email = req.body.email;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!email || !emailRegex.test(email)) {
-    return res.status(400).json({ message: "Invalid email address" });
-  }
-  next();
-};
+    if (!email || !emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email address" });
+    }
+    next();
+  };
 
 const checkPassword = (req, res, next) => {
   const { password } = req.body;
@@ -30,28 +30,76 @@ const checkPassword = (req, res, next) => {
   next();
 };
 
+// const checkUserExists = async (req, res, next) => {
+//   const { username, email } = req.body;
+
+//   try {
+//     const [rows] = await pool.execute(
+//       'SELECT username, email FROM users WHERE username = ? OR email = ?',
+//       [username, email]
+//     );
+
+//     if (rows.length > 0) {
+//       const taken = {
+//         username: rows.some(u => u.username === username),
+//         email: rows.some(u => u.email === email),
+//       };
+
+//       let message = '';
+//       if (taken.username && taken.email) message = 'User already exist';
+//       else if (taken.username) message = 'Username already exists';
+//       else message = 'User already exists';
+
+//       return res.status(400).json({ message });
+//     }
+//     next();
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
 const checkUserExists = async (req, res, next) => {
   const { username, email } = req.body;
+  const userId = req.params.id ? parseInt(req.params.id) : null;
+
+  if (!username && !email) {
+    return next(); // אין שדות לבדוק
+  }
 
   try {
-    const [rows] = await pool.execute(
-      'SELECT username, email FROM users WHERE username = ? OR email = ?',
-      [username, email]
-    );
+    const queryParts = [];
+    const values = [];
 
-    if (rows.length > 0) {
+    if (username) {
+      queryParts.push("username = ?");
+      values.push(username);
+    }
+    if (email) {
+      queryParts.push("email = ?");
+      values.push(email);
+    }
+
+    const query = `SELECT id, username, email FROM users WHERE ${queryParts.join(' OR ')}`;
+    const [rows] = await pool.execute(query, values);
+
+    const filtered = userId ? rows.filter(user => user.id !== userId) : rows;
+
+    if (filtered.length > 0) {
       const taken = {
-        username: rows.some(u => u.username === username),
-        email: rows.some(u => u.email === email),
+        username: username && filtered.some(u => u.username === username),
+        email: email && filtered.some(u => u.email === email),
       };
 
       let message = '';
-      if (taken.username && taken.email) message = 'Username and email already exist';
+      if (taken.username && taken.email) message = 'User already in use';
       else if (taken.username) message = 'Username already exists';
-      else message = 'Email already exists';
+      else message = 'User already exists';
 
       return res.status(400).json({ message });
     }
+
     next();
   } catch (err) {
     console.error(err);
@@ -59,8 +107,24 @@ const checkUserExists = async (req, res, next) => {
   }
 };
 
+
+const checkEmailIfExists = (req, res, next) => {
+  const { email } = req.body;
+
+  if (typeof email !== 'undefined') {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email address" });
+    }
+  }
+
+  next();
+};
+
+
 module.exports = {
   checkEmail,
   checkPassword,
   checkUserExists,
+  checkEmailIfExists
 };

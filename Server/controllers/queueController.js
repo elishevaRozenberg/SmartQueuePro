@@ -1,4 +1,4 @@
-const queueService = require('../services/queueService');
+const queueModel = require('../models/queueModel');
 
 exports.createQueue = async (req, res) => {
   try {
@@ -7,7 +7,7 @@ exports.createQueue = async (req, res) => {
       return res.status(400).json({ message: 'Missing required field: name' });
     }
 
-    const newQueue = await queueService.createQueue({ name, description, location });
+    const newQueue = await queueModel.createQueue({ name, description, location });
     res.status(201).json(newQueue);
   } catch (error) {
     console.error(error);
@@ -17,7 +17,7 @@ exports.createQueue = async (req, res) => {
 
 exports.getAllQueues = async (req, res) => {
   try {
-    const queues = await queueService.getAllQueues();
+    const queues = await queueModel.getAllQueues();
     res.json(queues);
   } catch (error) {
     console.error(error);
@@ -28,7 +28,7 @@ exports.getAllQueues = async (req, res) => {
 exports.getQueueById = async (req, res) => {
   try {
     const { id } = req.params;
-    const queue = await queueService.getQueueById(id);
+    const queue = await queueModel.getQueueById(id);
     if (!queue) {
       return res.status(404).json({ message: 'Queue not found' });
     }
@@ -44,7 +44,7 @@ exports.updateQueue = async (req, res) => {
     const { id } = req.params;
     const { name, description, location } = req.body;
 
-    const updatedQueue = await queueService.updateQueue(id, { name, description, location });
+    const updatedQueue = await queueModel.updateQueue(id, { name, description, location });
     if (!updatedQueue) {
       return res.status(404).json({ message: 'Queue not found' });
     }
@@ -58,7 +58,7 @@ exports.updateQueue = async (req, res) => {
 exports.deleteQueue = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await queueService.deleteQueue(id);
+    const deleted = await queueModel.deleteQueue(id);
     if (!deleted) {
       return res.status(404).json({ message: 'Queue not found' });
     }

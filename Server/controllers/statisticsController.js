@@ -1,4 +1,4 @@
-const statisticsService = require('../services/statisticsService');
+const statisticsModel = require('../models/statisiticsModel');
 
 exports.createStatistic = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ exports.createStatistic = async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields: queue_id and date' });
     }
 
-    const newStatistic = await statisticsService.createStatistic({ queue_id, date, avg_wait_time, calls_count });
+    const newStatistic = await statisticsModel.createStatistic({ queue_id, date, avg_wait_time, calls_count });
     res.status(201).json(newStatistic);
   } catch (error) {
     console.error(error);
@@ -18,7 +18,7 @@ exports.createStatistic = async (req, res) => {
 
 exports.getAllStatistics = async (req, res) => {
   try {
-    const statistics = await statisticsService.getAllStatistics();
+    const statistics = await statisticsModel.getAllStatistics();
     res.json(statistics);
   } catch (error) {
     console.error(error);
@@ -29,7 +29,7 @@ exports.getAllStatistics = async (req, res) => {
 exports.getStatisticById = async (req, res) => {
   try {
     const { id } = req.params;
-    const statistic = await statisticsService.getStatisticById(id);
+    const statistic = await statisticsModel.getStatisticById(id);
     if (!statistic) {
       return res.status(404).json({ message: 'Statistic not found' });
     }
@@ -45,7 +45,7 @@ exports.updateStatistic = async (req, res) => {
     const { id } = req.params;
     const { queue_id, date, avg_wait_time, calls_count } = req.body;
 
-    const updatedStatistic = await statisticsService.updateStatistic(id, { queue_id, date, avg_wait_time, calls_count });
+    const updatedStatistic = await statisticsModel.updateStatistic(id, { queue_id, date, avg_wait_time, calls_count });
     if (!updatedStatistic) {
       return res.status(404).json({ message: 'Statistic not found' });
     }
@@ -59,7 +59,7 @@ exports.updateStatistic = async (req, res) => {
 exports.deleteStatistic = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await statisticsService.deleteStatistic(id);
+    const deleted = await statisticsModel.deleteStatistic(id);
     if (!deleted) {
       return res.status(404).json({ message: 'Statistic not found' });
     }
