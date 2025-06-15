@@ -47,7 +47,6 @@ exports.updateQueue = async (id, data) => {
   return queueModel.updateQueue(id, data);
 };
 
-const queueModel = require('../models/queueModel');
 const callModel = require('../models/callModel'); // בהנחה שיש לך כזה
 
 exports.deleteQueue = async (id) => {
