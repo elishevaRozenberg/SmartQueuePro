@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 // ייבוא קומפוננטות
 // מחליפים את הייבוא של NavBar ו-Footer בייבוא של Layout
-import Layout from '../src/Layout'
+import Layout from './Layout'
 
 // דפי עמודים
 import Home from './pages/Home'
