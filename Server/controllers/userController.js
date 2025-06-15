@@ -12,7 +12,7 @@ exports.createUser = async (req, res) => {
       return res.status(400).json({ message: 'Missing required field' });
     }
 
-    const role= req.body.role || 'Client'; 
+    // const role= req.body.role || 'Client'; 
     const newUser = await userModel.createUser({
       username,
       email,
@@ -54,25 +54,6 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-// Update User
-// exports.updateUser = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { username, email, full_name } = req.body ||{};
-//      if (!username || !email || !full_name) {
-//       return res.status(400).json({ message: 'Missing required field' });
-//     }
-
-//     const updatedUser = await userModel.updateUser(id, { username, email, full_name});
-//     if (!updatedUser) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-//     res.json(updatedUser);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Error updating user' });
-//   }
-// };
 
 exports.updateUser = async (req, res) => {
   try {

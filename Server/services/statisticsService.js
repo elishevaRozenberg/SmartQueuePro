@@ -1,56 +1,39 @@
-// const pool = require('../../db/connection');
+const statisticsModel = require('../models/statisiticsModel');
 
-// // Create Statistic
-// exports.createStatistic = async ({ queue_id, date, avg_wait_time, calls_count }) => {
-//   const [result] = await pool.execute(
-//     `INSERT INTO statistics (queue_id, date, avg_wait_time, calls_count) VALUES (?, ?, ?, ?)`,
-//     [queue_id, date, avg_wait_time, calls_count]
-//   );
+exports.createStatistic = async ({ queue_id, date, avg_wait_time, calls_count }) => {
+  if (!queue_id || !date) {
+    throw new Error('Missing required fields: queue_id and date');
+  }
 
-//   return {
-//     id: result.insertId,
-//     queue_id,
-//     date,
-//     avg_wait_time,
-//     calls_count
-//   };
-// };
+  // כאן אפשר להוסיף ולידציות נוספות בעתיד, למשל לבדוק אם התור קיים במערכת
 
-// // Get All Statistics
-// exports.getAllStatistics = async () => {
-//   const [rows] = await pool.execute(`SELECT * FROM statistics`);
-//   return rows;
-// };
+  return await statisticsModel.createStatistic({ queue_id, date, avg_wait_time, calls_count });
+};
 
-// // Get Statistic By ID
-// exports.getStatisticById = async (id) => {
-//   const [rows] = await pool.execute(
-//     `SELECT * FROM statistics WHERE id = ?`,
-//     [id]
-//   );
-//   return rows[0] || null;
-// };
+exports.getAllStatistics = async () => {
+  return await statisticsModel.getAllStatistics();
+};
 
-// // Update Statistic
-// exports.updateStatistic = async (id, { queue_id, date, avg_wait_time, calls_count }) => {
-//   const [result] = await pool.execute(
-//     `UPDATE statistics SET queue_id = ?, date = ?, avg_wait_time = ?, calls_count = ? WHERE id = ?`,
-//     [queue_id, date, avg_wait_time, calls_count, id]
-//   );
+exports.getStatisticById = async (id) => {
+  const statistic = await statisticsModel.getStatisticById(id);
+  if (!statistic) {
+    throw new Error('Statistic not found');
+  }
+  return statistic;
+};
 
-//   if (result.affectedRows === 0) {
-//     return null;
-//   }
+exports.updateStatistic = async (id, { queue_id, date, avg_wait_time, calls_count }) => {
+  const updated = await statisticsModel.updateStatistic(id, { queue_id, date, avg_wait_time, calls_count });
+  if (!updated) {
+    throw new Error('Statistic not found');
+  }
+  return updated;
+};
 
-//   return exports.getStatisticById(id);
-// };
-
-// // Delete Statistic
-// exports.deleteStatistic = async (id) => {
-//   const [result] = await pool.execute(
-//     `DELETE FROM statistics WHERE id = ?`,
-//     [id]
-//   );
-
-//   return result.affectedRows > 0;
-// };
+exports.deleteStatistic = async (id) => {
+  const deleted = await statisticsModel.deleteStatistic(id);
+  if (!deleted) {
+    throw new Error('Statistic not found');
+  }
+  return true;
+};

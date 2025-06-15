@@ -53,3 +53,9 @@ exports.deleteQueue = async (id) => {
 
   return result.affectedRows > 0;
 };
+
+exports.getCallsByQueueId = async (queueId) => {
+  const query = 'SELECT * FROM Calls WHERE queue_id = ?';
+  const [calls] = await db.execute(query, [queueId]);
+  return calls;
+};

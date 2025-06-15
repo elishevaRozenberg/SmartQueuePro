@@ -19,7 +19,7 @@ exports.createUser = async ({ username, email, password, full_name, role }) => {
     username,
     email,
     full_name,
-    role: role || 'client'
+    role
   };
 };
 
@@ -35,23 +35,6 @@ exports.getUserById = async (id) => {
   return rows[0] || null;
 };
 
-// // Update User
-// exports.updateUser = async (id, { username, email,full_name }) => {
-//   const [result] = await pool.execute(
-//     `UPDATE users SET username = ?, email = ? ,full_name = ? WHERE id = ?`,
-//     [username, email, full_name, id]
-//   );
-//   if (result.affectedRows === 0) {
-//     return null;
-//   }
-//   return exports.getUserById(id);
-// };
-
-// // Delete User
-// exports.deleteUser = async (id) => {
-//   const [result] = await pool.execute(`DELETE FROM users WHERE id = ?`, [id]);
-//   return result.affectedRows > 0;
-// };
 
 exports.updateUser = async (id, newData) => {
   const existingUser = await exports.getUserById(id);

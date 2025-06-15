@@ -1,55 +1,67 @@
-// const pool = require('../../db/connection');
+const queueModel = require('../models/queueModel');
 
-// // Create Queue
-// exports.createQueue = async ({ name, description, location }) => {
-//   const [result] = await pool.execute(
-//     `INSERT INTO queues (name, description, location) VALUES (?, ?, ?)`,
-//     [name, description, location]
-//   );
+exports.createQueue = async ({ name, description, location }) => {
+  if (!name || typeof name !== 'string' || name.length < 2) {
+    throw new Error('שם התור לא תקין');
+  }
 
-//   return {
-//     id: result.insertId,
-//     name,
-//     description,
-//     location
-//   };
-// };
+  // לבדוק אם תור בשם זה כבר קיים
+  const allQueues = await queueModel.getAllQueues();
+  const nameExists = allQueues.some(q => q.name.toLowerCase() === name.toLowerCase());
 
-// // Get All Queues
-// exports.getAllQueues = async () => {
-//   const [rows] = await pool.execute(`SELECT * FROM queues`);
-//   return rows;
-// };
+  if (nameExists) {
+    throw new Error('תור בשם זה כבר קיים');
+  }
 
-// // Get Queue By ID
-// exports.getQueueById = async (id) => {
-//   const [rows] = await pool.execute(
-//     `SELECT * FROM queues WHERE id = ?`,
-//     [id]
-//   );
-//   return rows[0] || null;
-// };
+  return queueModel.createQueue({ name, description, location });
+};
 
-// // Update Queue
-// exports.updateQueue = async (id, { name, description, location }) => {
-//   const [result] = await pool.execute(
-//     `UPDATE queues SET name = ?, description = ?, location = ? WHERE id = ?`,
-//     [name, description, location, id]
-//   );
+exports.getAllQueues = async () => {
+  return queueModel.getAllQueues();
+};
 
-//   if (result.affectedRows === 0) {
-//     return null;
-//   }
+exports.getQueueById = async (id) => {
+  if (!id || isNaN(id)) {
+    throw new Error('ID לא תקין');
+  }
 
-//   return exports.getQueueById(id);
-// };
+  const queue = await queueModel.getQueueById(id);
+  if (!queue) {
+    throw new Error('תור לא נמצא');
+  }
 
-// // Delete Queue
-// exports.deleteQueue = async (id) => {
-//   const [result] = await pool.execute(
-//     `DELETE FROM queues WHERE id = ?`,
-//     [id]
-//   );
+  return queue;
+};
 
-//   return result.affectedRows > 0;
-// };
+exports.updateQueue = async (id, data) => {
+  const queue = await queueModel.getQueueById(id);
+  if (!queue) {
+    throw new Error('תור לא נמצא');
+  }
+
+  // אופציונלי: לא מאפשרים לשנות שם לתור ספציפי (למשל system queue)
+  if (queue.name === 'Main Queue' && data.name && data.name !== 'Main Queue') {
+    throw new Error('לא ניתן לשנות את שם התור הראשי');
+  }
+
+  return queueModel.updateQueue(id, data);
+};
+
+const queueModel = require('../models/queueModel');
+const callModel = require('../models/callModel'); // בהנחה שיש לך כזה
+
+exports.deleteQueue = async (id) => {
+  const queue = await queueModel.getQueueById(id);
+  if (!queue) {
+    throw new Error('תור לא נמצא');
+  }
+
+  // בדיקה: לא למחוק תור אם יש לו קריאות פעילות
+  const relatedCalls = await callModel.getCallsByQueueId(id);
+  if (relatedCalls.length > 0) {
+     throw new Error('לא ניתן למחוק תור שיש לו קריאות פעילות');
+  }
+
+  return queueModel.deleteQueue(id);
+};
+
