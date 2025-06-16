@@ -12,7 +12,7 @@ exports.createUser = async (req, res) => {
       return res.status(400).json({ message: 'Missing required field' });
     }
 
-    // const role= req.body.role || 'Client'; 
+    const role= req.body.role || 'Client'; 
     const newUser = await userModel.createUser({
       username,
       email,

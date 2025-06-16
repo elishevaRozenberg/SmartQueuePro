@@ -30,7 +30,7 @@ export default function SignUpForm() {
 
     try {
       const { confirmPassword, ...dataToSend } = form;
-      const user = await api.post('/auth/signup', dataToSend);
+      const user = await api.post('/users/signup', dataToSend);
       setUser(user);
       navigate('/');
     } catch (err) {

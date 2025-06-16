@@ -19,7 +19,7 @@ export default function SignInForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = await api.post('/auth/signin', form);
+      const user = await api.post('/users/signin', form);
       setUser(user);
       navigate('/');
     } catch (err) {
