@@ -1,43 +1,41 @@
-// import { useState } from 'react'
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
+import SignInSignUpPage from './pages/SignInSignUpPage';
+// import AdminDashboardPage from './pages/AdminDashboardPage';
+// import QueuePage from './pages/QueuePage';
+// import QueueDetailsPage from './pages/QueueDetailsPage';
+// import StatisticsPage from './pages/StatisticsPage';
+// import UserProfilePage from './pages/UserProfilePage';
+// import SettingsPage from './pages/SettingsPage';
+import About from './pages/About';
+import './App.css';
 
-// // ייבוא קומפוננטות
-// // מחליפים את הייבוא של NavBar ו-Footer בייבוא של Layout
-// import Layout from './Layout'
+const App = () => {
+  return (
+    <div className="app-container">
+      <NavBar />
+      
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/signin" element={<SignInSignUpPage />} />
+          {/* <Route path="/admin" element={<AdminDashboardPage />} /> */}
+          {/* <Route path="/queues" element={<QueuePage />} /> */}
+          {/* <Route path="/queues/:id" element={<QueueDetailsPage />} /> */}
+          {/* <Route path="/statistics" element={<StatisticsPage />} /> */}
+          {/* <Route path="/profile" element={<UserProfilePage />} /> */}
+          {/* <Route path="/settings" element={<SettingsPage />} /> */}
+          <Route path="/about" element={<About />} />
+          {/* Add more routes as needed */}
+        </Routes>
+      </main>
 
-// // דפי עמודים
-// import { UserProvider } from './context/UserContext';
-// // קומפוננטות אבטחה
-// import ProtectedRoute from "./components/auth/ProtectedRoute";
+      <Footer />
+    </div>
+  );
+};
 
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <Router>
-//       <Layout>
-//         <Routes>
-//           <Route path="/" element={<Home />} />
-//           <Route path="/about" element={<About />} />
-
-//           {/* דוגמא להגנה על רוט */}
-//           <Route
-//             path="/admin"
-//             element={
-//               <ProtectedRoute requiredRole="admin">
-//                 <AdminDashboard />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           <Route path="/profile" element={<Profile />} />
-//           <Route path="/queues" element={<Queues />} />
-//           <Route path="/settings" element={<Settings />} />
-//           <Route path="/statics" element={<Statics />} />
-//           <Route path="/users" element={<UserManagement />} />
-//         </Routes>
-//       </Layout>
-//     </Router>
-//   )
-// }
-
+export default App;
