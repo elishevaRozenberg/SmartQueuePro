@@ -1,52 +1,43 @@
-import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+// import { useState } from 'react'
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-// ייבוא קומפוננטות
-// מחליפים את הייבוא של NavBar ו-Footer בייבוא של Layout
-import Layout from './Layout'
+// // ייבוא קומפוננטות
+// // מחליפים את הייבוא של NavBar ו-Footer בייבוא של Layout
+// import Layout from './Layout'
 
-// דפי עמודים
-import Home from './pages/Home'
-import About from './pages/About'
-import AdminDashboard from './pages/AdminDashboard'
-import Profile from './pages/Profile'
-import Queues from './pages/Queues'
-import Settings from './pages/Settings'
-import Statics from './pages/Statics'
-import UserManagement from './pages/UserManagement'
+// // דפי עמודים
+// import { UserProvider } from './context/UserContext';
+// // קומפוננטות אבטחה
+// import ProtectedRoute from "./components/auth/ProtectedRoute";
 
-// קומפוננטות אבטחה
-import ProtectedRoute from "./components/auth/ProtectedRoute";
+// function App() {
+//   const [count, setCount] = useState(0)
 
-function App() {
-  const [count, setCount] = useState(0)
+//   return (
+//     <Router>
+//       <Layout>
+//         <Routes>
+//           <Route path="/" element={<Home />} />
+//           <Route path="/about" element={<About />} />
 
-  return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+//           {/* דוגמא להגנה על רוט */}
+//           <Route
+//             path="/admin"
+//             element={
+//               <ProtectedRoute requiredRole="admin">
+//                 <AdminDashboard />
+//               </ProtectedRoute>
+//             }
+//           />
 
-          {/* דוגמא להגנה על רוט */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+//           <Route path="/profile" element={<Profile />} />
+//           <Route path="/queues" element={<Queues />} />
+//           <Route path="/settings" element={<Settings />} />
+//           <Route path="/statics" element={<Statics />} />
+//           <Route path="/users" element={<UserManagement />} />
+//         </Routes>
+//       </Layout>
+//     </Router>
+//   )
+// }
 
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/queues" element={<Queues />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/statics" element={<Statics />} />
-          <Route path="/users" element={<UserManagement />} />
-        </Routes>
-      </Layout>
-    </Router>
-  )
-}
-
-export default App
