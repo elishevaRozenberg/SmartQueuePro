@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useContext } from 'react';
 import { UserContext } from '../context/UserContext';
 
 const NavBar = () => {
@@ -18,21 +17,14 @@ const NavBar = () => {
 
   const navigationItems = [
     { name: 'Home', href: '/' },
-    { name: 'Queues', href: '/queues', auth: true },
-    { name: 'Statistics', href: '/statistics', roles: ['admin', 'employee'] },
-    { name: 'Admin Dashboard', href: '/admin', roles: ['admin'] },
+    { name: 'Queues', href: '/queues' },
+    { name: 'Statistics', href: '/statistics' },
+    { name: 'Admin Dashboard', href: '/admin' },
     { name: 'About', href: '/about' },
   ];
 
-  const filteredNavItems = navigationItems.filter(item => {
-    if (!item.auth && !item.roles) return true;
-    if (item.auth && isAuthenticated) return true;
-    if (item.roles && user && item.roles.includes(user.role)) return true;
-    return false;
-  });
-
   const renderNavLinks = (isMobile = false) => (
-    filteredNavItems.map(item => {
+    navigationItems.map(item => {
       const isActive = location.pathname === item.href;
       return (
         <Link

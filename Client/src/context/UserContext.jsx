@@ -15,7 +15,7 @@
 // UserContext.js
 import { createContext, useState, useEffect } from 'react';
 
-export const UserContext = createContext();
+
 
 export const UserProvider = ({ children }) => {
   const [user, setUserState] = useState(null);
@@ -47,3 +47,4 @@ export const UserProvider = ({ children }) => {
   );
 };
 
+export const UserContext = createContext();
