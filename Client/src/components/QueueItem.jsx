@@ -49,13 +49,10 @@
 
 // export default QueueItem;
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Users, Clock, UserPlus, XCircle, CheckCircle } from 'lucide-react';
 
 const QueueItem = ({ queue, userEntry, onJoinQueue, onLeaveQueue, isLoading }) => {
-  const currentSize = queue.currentSize ?? 0; // כדאי להעביר כ-prop
+  const currentSize = queue.currentSize ?? 0;
 
   const getStatusColor = () => {
     const percentage = (currentSize / queue.max_capacity) * 100;
@@ -67,79 +64,93 @@ const QueueItem = ({ queue, userEntry, onJoinQueue, onLeaveQueue, isLoading }) =
   const statusColor = getStatusColor();
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 border-0 shadow-md">
-      <CardHeader className="pb-3 flex justify-between items-center">
+    <div className="rounded-lg shadow-md border p-4 bg-white hover:shadow-lg transition-all duration-300">
+      <div className="flex justify-between items-center mb-2">
         <div>
-          <CardTitle className="text-lg">{queue.name}</CardTitle>
+          <h3 className="text-lg font-bold">{queue.name}</h3>
           <p className="text-sm text-slate-600">{queue.description}</p>
         </div>
-        <Badge variant="outline" className={`${queue.is_active ? 'border-green-200 text-green-700' : 'border-red-200 text-red-700'}`}>
+        <span
+          style={{
+            border: queue.is_active ? "1px solid #22c55e" : "1px solid #ef4444",
+            color: queue.is_active ? "#22c55e" : "#ef4444",
+            borderRadius: "8px",
+            padding: "2px 8px",
+            fontSize: "0.9em"
+          }}
+        >
           {queue.is_active ? 'Active' : 'Closed'}
-        </Badge>
-      </CardHeader>
+        </span>
+      </div>
 
-      <CardContent className="space-y-4">
-        <div className="flex justify-between items-center text-sm">
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-slate-400" />
-            <span className="text-slate-600">Queue Size</span>
-          </div>
-          <span className={`font-medium ${statusColor}`}>
-            {currentSize}/{queue.max_capacity}
-          </span>
+      <div className="flex justify-between items-center text-sm mb-2">
+        <div className="flex items-center gap-2">
+          <Users className="w-4 h-4 text-slate-400" />
+          <span className="text-slate-600">Queue Size</span>
         </div>
+        <span className={`font-medium ${statusColor}`}>
+          {currentSize}/{queue.max_capacity}
+        </span>
+      </div>
 
-        <div className="flex justify-between items-center text-sm">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-slate-400" />
-            <span className="text-slate-600">Est. Wait Time</span>
-          </div>
-          <span className="font-medium text-slate-900">{queue.estimated_wait_time} min</span>
+      <div className="flex justify-between items-center text-sm mb-2">
+        <div className="flex items-center gap-2">
+          <Clock className="w-4 h-4 text-slate-400" />
+          <span className="text-slate-600">Est. Wait Time</span>
         </div>
+        <span className="font-medium text-slate-900">{queue.estimated_wait_time} min</span>
+      </div>
 
-        {userEntry ? (
-          <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-orange-600" />
-                <span className="text-sm font-medium text-orange-800">You're in queue</span>
-              </div>
-              <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                Position #{userEntry.position}
-              </Badge>
+      {userEntry ? (
+        <div className="p-3 bg-orange-50 rounded-lg border border-orange-200 mb-2">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-orange-600" />
+              <span className="text-sm font-medium text-orange-800">You're in queue</span>
             </div>
-            <p className="text-xs text-orange-700 mt-1">
-              Estimated call time: {new Date(userEntry.estimated_call_time).toLocaleTimeString()}
-            </p>
+            <span
+              style={{
+                background: "#fef3c7",
+                color: "#b45309",
+                borderRadius: "8px",
+                padding: "2px 8px",
+                fontSize: "0.9em",
+                border: "1px solid #fde68a"
+              }}
+            >
+              Position #{userEntry.position}
+            </span>
           </div>
-        ) : null}
-
-        <div className="pt-2">
-          {userEntry ? (
-            <Button
-              onClick={() => onLeaveQueue(queue.id)}
-              disabled={isLoading || !queue.is_active}
-              variant="outline"
-              className="w-full border-red-200 text-red-700 hover:bg-red-50"
-            >
-              <XCircle className="w-4 h-4 mr-2" />
-              Leave Queue
-            </Button>
-          ) : (
-            <Button
-              onClick={() => onJoinQueue(queue.id)}
-              disabled={isLoading || !queue.is_active || currentSize >= queue.max_capacity}
-              className="w-full"
-              style={{ backgroundColor: queue.color }}
-            >
-              <UserPlus className="w-4 h-4 mr-2" />
-              {currentSize >= queue.max_capacity ? 'Queue Full' : 'Join Queue'}
-            </Button>
-          )}
+          <p className="text-xs text-orange-700 mt-1">
+            Estimated call time: {userEntry.estimated_call_time ? new Date(userEntry.estimated_call_time).toLocaleTimeString() : "-"}
+          </p>
         </div>
-      </CardContent>
-    </Card>
+      ) : null}
+
+      <div className="pt-2">
+        {userEntry ? (
+          <button
+            onClick={() => onLeaveQueue(queue.id)}
+            disabled={isLoading || !queue.is_active}
+            className="w-full border border-red-200 text-red-700 rounded py-2 flex items-center justify-center gap-2 hover:bg-red-50 transition"
+            style={{ background: "white" }}
+          >
+            <XCircle className="w-4 h-4" />
+            Leave Queue
+          </button>
+        ) : (
+          <button
+            onClick={() => onJoinQueue(queue.id)}
+            disabled={isLoading || !queue.is_active || currentSize >= queue.max_capacity}
+            className="w-full bg-green-600 text-white rounded py-2 flex items-center justify-center gap-2 hover:bg-green-700 transition"
+            style={{ opacity: currentSize >= queue.max_capacity ? 0.6 : 1 }}
+          >
+            <UserPlus className="w-4 h-4" />
+            {currentSize >= queue.max_capacity ? 'Queue Full' : 'Join Queue'}
+          </button>
+        )}
+      </div>
+    </div>
   );
 };
-
 export default QueueItem;

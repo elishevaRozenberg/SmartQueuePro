@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import { Users, Clock } from 'lucide-react';
+
+// דוגמה לפונקציה שמחזירה נתוני תור (להחליף ב-fetch אמיתי)
+async function fetchQueueById(id) {
+  // כאן תוכל להחליף ב-fetch אמיתי לשרת שלך
+  return {
+    name: "Pilates Queue",
+    is_active: true,
+    description: "Pilates class queue for today.",
+    max_capacity: 20,
+    estimated_wait_time: 15,
+  };
+}
 
 const QueueDetailsPage = () => {
   const { id } = useParams();
@@ -14,7 +24,6 @@ const QueueDetailsPage = () => {
   useEffect(() => {
     const loadQueueDetails = async () => {
       try {
-        // כאן תביאי את הפרטים של התור לפי id
         const data = await fetchQueueById(id);
         setQueue(data);
         setError('');
@@ -33,34 +42,40 @@ const QueueDetailsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">{queue.name}</CardTitle>
-          <Badge variant="outline" className={`${queue.is_active ? 'border-green-200 text-green-700' : 'border-red-200 text-red-700'}`}>
-            {queue.is_active ? 'Active' : 'Closed'}
-          </Badge>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4 text-slate-700">{queue.description}</p>
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-slate-400" />
-              <span className="text-slate-600 font-medium">Max Capacity:</span>
-            </div>
-            <span className="font-semibold text-slate-900">{queue.max_capacity}</span>
+      <div className="border rounded-lg shadow-md p-6 bg-white">
+        <div className="mb-4 flex justify-between items-center">
+          <h2 className="text-2xl font-bold">{queue.name}</h2>
+      // מחק את השורה:
+// import { Badge } from "../components/ui/badge";
+
+<span style={{
+  border: queue.is_active ? "1px solid #22c55e" : "1px solid #ef4444",
+  color: queue.is_active ? "#22c55e" : "#ef4444",
+  borderRadius: "8px",
+  padding: "2px 8px",
+  fontSize: "0.9em"
+}}>
+  {queue.is_active ? 'Active' : 'Closed'}
+</span>
+        </div>
+        <div className="mb-4 text-slate-700">{queue.description}</div>
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-slate-400" />
+            <span className="text-slate-600 font-medium">Max Capacity:</span>
           </div>
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-slate-400" />
-              <span className="text-slate-600 font-medium">Estimated Wait Time:</span>
-            </div>
-            <span className="font-semibold text-slate-900">{queue.estimated_wait_time} min</span>
+          <span className="font-semibold text-slate-900">{queue.max_capacity}</span>
+        </div>
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-slate-400" />
+            <span className="text-slate-600 font-medium">Estimated Wait Time:</span>
           </div>
-          {/* הוסיפי פה כל מידע נוסף שרלוונטי לפרטי תור */}
-        </CardContent>
-      </Card>
+          <span className="font-semibold text-slate-900">{queue.estimated_wait_time} min</span>
+        </div>
+        {/* הוסיפי פה כל מידע נוסף שרלוונטי לפרטי תור */}
+      </div>
     </div>
   );
 };
-
 export default QueueDetailsPage;

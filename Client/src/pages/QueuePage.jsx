@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../components/auth/AuthContext';
-import QueueList from '../components/queue/QueueList';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../context/UserContext';
+import QueueList from '../components/QueueList';
+// אם אין לך קובץ button, תחליף ל-Button רגיל או מחק את הייבוא הבא
+// import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 
 const QueuePage = () => {
-  const { user } = useAuth();
+  const { user } = useContext(UserContext);
   const [queues, setQueues] = useState([]);
   const [userEntries, setUserEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,18 +75,18 @@ const QueuePage = () => {
           <span className="text-sm text-slate-500">
             Last updated: {lastRefresh.toLocaleTimeString()}
           </span>
-          <Button
+          {/* אם אין לך קומפוננטת Button, תשתמש ב-button רגיל */}
+          <button
             onClick={() => {
               setIsLoading(true);
               loadData();
             }}
-            variant="outline"
-            size="sm"
+            className="border rounded px-3 py-1 text-sm flex items-center"
             disabled={isLoading}
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
-          </Button>
+          </button>
         </div>
       </div>
 
