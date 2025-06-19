@@ -1,130 +1,99 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { UserContext } from '../context/UserContext';
+import Fetch from '../Fetch';
+import UserAvatar from '../components/UserAvatar';
 
-const UserProfileForm = () => {
-  const { user } = useContext(UserContext);
-  const [profile, setProfile] = useState({
-    full_name: '',
-    email: '',
-    phone: '',
-    profile_image: '',
+const api = new Fetch();
+
+const UserProfilePage = () => {
+  const { user, setUser } = useContext(UserContext);
+  const [form, setForm] = useState({
+    full_name: user.full_name,
+    email: user.email,
+    imageUrl: user.imageUrl || '',
   });
-
-  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
 
-  // טען את המידע מהשרת
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/user/profile', {
-          credentials: 'include',
-        });
-        const data = await response.json();
-        setProfile(data);
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
   const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
 
     try {
-      const response = await fetch('/api/user/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(profile),
-      });
-
-      if (!response.ok) throw new Error('Failed to update profile');
+      const updatedUser = await api.put('/users/profile', form);
+      setUser(updatedUser);
       setMessage('Profile updated successfully!');
-    } catch (error) {
-      setMessage('Error updating profile.');
+    } catch (err) {
+      setMessage('Update failed: ' + err.message);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-
   return (
-    <form className="max-w-xl mx-auto p-6 bg-white shadow-md rounded" onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold mb-6">Personal Information</h2>
-      <p className="text-slate-600 mb-6">Update your personal details here.</p>
+    <div className="max-w-2xl mx-auto p-6">
+      <h1 className="text-3xl font-semibold mb-6">Personal Information</h1>
+      <p className="mb-4 text-gray-600">Update your personal details here.</p>
 
-      {/* Initials */}
-      <div className="flex items-center gap-4 mb-4">
-        <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center text-xl font-semibold text-orange-700">
-          {user?.username?.slice(0, 2).toUpperCase()}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex items-center space-x-4">
+          <UserAvatar fullName={form.full_name} imageUrl={form.imageUrl} size={80} />
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-slate-700">Profile Image URL</label>
+          <label className="block mb-1 font-medium">Profile Image URL</label>
           <input
             type="text"
-            name="profile_image"
-            value={profile.profile_image}
+            name="imageUrl"
+            value={form.imageUrl}
             onChange={handleChange}
-            className="mt-1 w-full p-2 border rounded"
+            placeholder="https://example.com/avatar.jpg"
+            className="w-full px-4 py-2 border rounded"
           />
         </div>
-      </div>
 
-      {/* Full Name */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-slate-700">Full Name</label>
-        <input
-          type="text"
-          value={profile.full_name}
-          readOnly
-          className="mt-1 w-full p-2 border rounded bg-slate-100"
-        />
-        <small className="text-slate-500">Full name is managed by your login provider.</small>
-      </div>
+        {form.imageUrl && (
+          <div>
+            <label className="block mb-1 font-medium">Preview</label>
+            <img
+              src={form.imageUrl}
+              alt="Profile Preview"
+              className="w-32 h-32 rounded-full object-cover border"
+              onError={(e) => e.target.style.display = 'none'}
+            />
+          </div>
+        )}
 
-      {/* Email */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-slate-700">Email</label>
-        <input
-          type="email"
-          name="email"
-          value={profile.email}
-          onChange={handleChange}
-          className="mt-1 w-full p-2 border rounded"
-        />
-      </div>
+        <div>
+          <label className="block mb-1 font-medium">Full Name</label>
+          <input
+            type="text"
+            name="full_name"
+            value={form.full_name}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded"
+          />
+        </div>
 
-      {/* Phone Number */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-slate-700">Phone Number</label>
-        <input
-          type="text"
-          name="phone"
-          value={profile.phone}
-          onChange={handleChange}
-          className="mt-1 w-full p-2 border rounded"
-        />
-      </div>
+        <div>
+          <label className="block mb-1 font-medium">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded"
+          />
+        </div>
 
-      <button
-        type="submit"
-        className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
-      >
-        Save Changes
-      </button>
+        {message && <div className="text-green-600 font-medium">{message}</div>}
 
-      {message && <p className="mt-4 text-slate-600">{message}</p>}
-    </form>
+        <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded">
+          Update Profile
+        </button>
+      </form>
+    </div>
   );
 };
 
-export default UserProfileForm;
+export default UserProfilePage;

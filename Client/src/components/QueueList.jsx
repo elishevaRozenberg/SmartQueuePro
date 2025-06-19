@@ -1,24 +1,14 @@
+// QueueList.jsx
 import React from 'react';
 import QueueItem from './QueueItem';
 
-const QueueList = ({ queues, userEntries, onJoinQueue, onLeaveQueue, isLoading }) => {
+export default function QueueList({ queues, ...handlers }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {queues.map(queue => {
-        const userEntry = userEntries.find(entry => entry.queue_id === queue.id && entry.status === 'waiting');
-        return (
-          <QueueItem
-            key={queue.id}
-            queue={queue}
-            userEntry={userEntry}
-            onJoinQueue={onJoinQueue}
-            onLeaveQueue={onLeaveQueue}
-            isLoading={isLoading}
-          />
-        );
-      })}
+    <div className="grid md:grid-cols-3 gap-4">
+      {queues.map(queue => (
+        <QueueItem key={queue.id} queue={queue} {...handlers} />
+      ))}
     </div>
   );
-};
+}
 
-export default QueueList;

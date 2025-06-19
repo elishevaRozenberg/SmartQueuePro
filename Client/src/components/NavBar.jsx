@@ -1,103 +1,56 @@
-import React, { useState, useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import UserAvatar from './UserAvatar';
 
 const NavBar = () => {
-  const location = useLocation();
-  const { user, logout } = useContext(UserContext);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
-  const isAuthenticated = !!user;
-
-  const getInitials = (fullName) => {
-    if (!fullName) return 'U';
-    const names = fullName.split(' ');
-    return names.map(n => n[0]).join('').toUpperCase();
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/users/logout', { method: 'POST', credentials: 'include' });
+      setUser(null);
+      navigate('/');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
   };
 
-  const navigationItems = [
-    { name: 'Home', href: '/' },
-    { name: 'Queues', href: '/queues' },
-    { name: 'Statistics', href: '/statistics' },
-    { name: 'Admin Dashboard', href: '/admin' },
-    { name: 'About', href: '/about' },
-  ];
-
-  const renderNavLinks = (isMobile = false) => (
-    navigationItems.map(item => {
-      const isActive = location.pathname === item.href;
-      return (
-        <Link
-          key={item.name}
-          to={item.href}
-          className={`nav-link ${isActive ? 'active' : ''} ${isMobile ? 'mobile' : ''}`}
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          {item.name}
-        </Link>
-      );
-    })
-  );
-
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        {/* Logo */}
-        <Link to="/" className="navbar-logo">
-          <span className="logo-icon">🏋️</span>
-          <span className="logo-text">FitQueue</span>
-        </Link>
+    <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+      {/* Left - Logo */}
+      <Link to="/" className="text-xl font-bold text-blue-600">
+        FitQueue
+      </Link>
 
-        {/* Desktop Navigation */}
-        <div className="navbar-links desktop">
-          {renderNavLinks()}
-        </div>
-
-        {/* User Actions */}
-        <div className="navbar-user">
-          {isAuthenticated ? (
-            <div className="user-dropdown">
-              <button className="avatar-button">
-                <div className="avatar-fallback">
-                  {getInitials(user.full_name)}
-                </div>
-              </button>
-              <div className="dropdown-menu">
-                <p className="user-name">{user.full_name}</p>
-                <p className="user-role">{user.role}</p>
-                <Link to="/profile" className="dropdown-item">Profile</Link>
-                <Link to="/settings" className="dropdown-item">Settings</Link>
-                <button onClick={logout} className="dropdown-item">Logout</button>
-              </div>
-            </div>
-          ) : (
-            <div className="auth-buttons desktop">
-              <Link to="/signin" className="btn login">Login</Link>
-              <Link to="/signup" className="btn signup">Sign Up</Link>
-            </div>
-          )}
-
-          {/* Mobile Menu Button */}
-          <button className="menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            ☰
-          </button>
-        </div>
+      {/* Center - Links */}
+      <div className="space-x-6 hidden md:flex">
+        <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
+        <Link to="/about" className="text-gray-700 hover:text-blue-600">About</Link>
+        <Link to="/queues" className="text-gray-700 hover:text-blue-600">Queues</Link>
+        <Link to="/statistics" className="text-gray-700 hover:text-blue-600">Statistics</Link>
+        {user?.role === 'Admin' && (
+          <Link to="/admin" className="text-gray-700 hover:text-blue-600">Admin Dashboard</Link>
+        )}
       </div>
 
-      {/* Mobile Navigation */}
-      {mobileMenuOpen && (
-        <div className="mobile-menu">
-          <div className="navbar-links mobile">
-            {renderNavLinks(true)}
-          </div>
-          {!isAuthenticated && (
-            <div className="auth-buttons mobile">
-              <Link to="/signin" className="btn login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
-              <Link to="/signup" className="btn signup" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
+      {/* Right - Profile/Login */}
+      <div className="relative">
+        {user ? (
+          <div className="group relative inline-block">
+            <div className="cursor-pointer">
+              <UserAvatar fullName={user.full_name} imageUrl={user.imageUrl} size={40} />
             </div>
-          )}
-        </div>
-      )}
+            <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+              <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
+              <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100">Log Out</button>
+            </div>
+          </div>
+        ) : (
+          <Link to="/signin" className="text-blue-600 hover:underline font-medium">Sign In / Sign Up</Link>
+        )}
+      </div>
     </nav>
   );
 };

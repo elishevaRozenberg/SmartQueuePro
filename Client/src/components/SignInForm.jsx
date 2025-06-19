@@ -21,7 +21,13 @@ export default function SignInForm() {
     try {
       const user = await api.post('/users/signin', form);
       setUser(user);
-      navigate('/');
+      if (user.role === 'Admin') {
+        navigate('/admin');
+      } else if (user.role === 'Secretary') {
+        navigate('/queues');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.message);
     }
