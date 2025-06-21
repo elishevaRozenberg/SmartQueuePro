@@ -76,6 +76,7 @@ exports.completeCall = async (req, res) => {
     res.status(400).json({ message: error.message || 'Error completing call' });
   }
 };
+
 exports.cancelCall = async (req, res) => {
   try {
     const { id } = req.params;
@@ -86,5 +87,18 @@ exports.cancelCall = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: error.message || 'Error cancelling call' });
+  }
+};
+
+// פונקציה לקבלת כל הקריאות של משתמש מסוים
+exports.getCallsByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    // מניחים שיש בשירות פונקציה getCallsByUserId
+    const calls = await callService.getCallsByUserId(userId);
+    res.json(calls);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message || 'Error fetching calls by user ID' });
   }
 };

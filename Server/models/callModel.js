@@ -208,3 +208,10 @@ exports.createCallAtomic = async (queue_id, user_id, clock) => {
     conn.release();
   }
 };
+
+exports.getCallsByUserId = async (userId) => {
+  const sql = 'SELECT * FROM calls WHERE user_id = ?';
+const [rows] = await pool.execute('SELECT * FROM calls WHERE user_id = ?', [userId]);
+  return rows;
+};
+

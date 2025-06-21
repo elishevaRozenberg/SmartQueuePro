@@ -134,4 +134,11 @@ class CallService {
 
 }
 
+exports.getCallsByUserId = async (userId) => {
+  // כאן תבצע שאילתה לטבלה calls כדי לקבל את כל ה-calls של המשתמש הזה
+  // למשל: SELECT * FROM calls WHERE user_id = ?
+  return await callModel.getCallsByUserId(userId);
+};
+
+
 module.exports = new CallService();
