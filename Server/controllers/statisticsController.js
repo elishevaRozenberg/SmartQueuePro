@@ -1,4 +1,5 @@
-// const statisticsModel = require('../models/statisiticsModel');
+
+// const statisticsService = require('../services/statisticsService');
 
 // exports.createStatistic = async (req, res) => {
 //   try {
@@ -8,7 +9,7 @@
 //       return res.status(400).json({ message: 'Missing required fields: queue_id and date' });
 //     }
 
-//     const newStatistic = await statisticsModel.createStatistic({ queue_id, date, avg_wait_time, calls_count });
+//     const newStatistic = await statisticsService.createStatistic({ queue_id, date, avg_wait_time, calls_count });
 //     res.status(201).json(newStatistic);
 //   } catch (error) {
 //     console.error(error);
@@ -18,7 +19,7 @@
 
 // exports.getAllStatistics = async (req, res) => {
 //   try {
-//     const statistics = await statisticsModel.getAllStatistics();
+//     const statistics = await statisticsService.getAllStatistics();
 //     res.json(statistics);
 //   } catch (error) {
 //     console.error(error);
@@ -29,7 +30,7 @@
 // exports.getStatisticById = async (req, res) => {
 //   try {
 //     const { id } = req.params;
-//     const statistic = await statisticsModel.getStatisticById(id);
+//     const statistic = await statisticsService.getStatisticById(id);
 //     if (!statistic) {
 //       return res.status(404).json({ message: 'Statistic not found' });
 //     }
@@ -45,7 +46,7 @@
 //     const { id } = req.params;
 //     const { queue_id, date, avg_wait_time, calls_count } = req.body;
 
-//     const updatedStatistic = await statisticsModel.updateStatistic(id, { queue_id, date, avg_wait_time, calls_count });
+//     const updatedStatistic = await statisticsService.updateStatistic(id, { queue_id, date, avg_wait_time, calls_count });
 //     if (!updatedStatistic) {
 //       return res.status(404).json({ message: 'Statistic not found' });
 //     }
@@ -59,7 +60,7 @@
 // exports.deleteStatistic = async (req, res) => {
 //   try {
 //     const { id } = req.params;
-//     const deleted = await statisticsModel.deleteStatistic(id);
+//     const deleted = await statisticsService.deleteStatistic(id);
 //     if (!deleted) {
 //       return res.status(404).json({ message: 'Statistic not found' });
 //     }
@@ -69,7 +70,10 @@
 //     res.status(500).json({ message: 'Error deleting statistic' });
 //   }
 // };
-const statisticsService = require('../services/statisticsService');
+
+
+// statisticsController.js
+const statisticsModel = require('../models/statisticsModel');
 
 exports.createStatistic = async (req, res) => {
   try {
@@ -79,7 +83,13 @@ exports.createStatistic = async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields: queue_id and date' });
     }
 
-    const newStatistic = await statisticsService.createStatistic({ queue_id, date, avg_wait_time, calls_count });
+    const newStatistic = await statisticsModel.createStatistic({
+      queue_id,
+      date,
+      avg_wait_time,
+      calls_count
+    });
+
     res.status(201).json(newStatistic);
   } catch (error) {
     console.error(error);
@@ -89,7 +99,7 @@ exports.createStatistic = async (req, res) => {
 
 exports.getAllStatistics = async (req, res) => {
   try {
-    const statistics = await statisticsService.getAllStatistics();
+    const statistics = await statisticsModel.getAllStatistics();
     res.json(statistics);
   } catch (error) {
     console.error(error);
@@ -99,28 +109,19 @@ exports.getAllStatistics = async (req, res) => {
 
 exports.getStatisticById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const statistic = await statisticsService.getStatisticById(id);
-    if (!statistic) {
-      return res.status(404).json({ message: 'Statistic not found' });
-    }
-    res.json(statistic);
+    const stat = await statisticsModel.getStatisticById(req.params.id);
+    if (!stat) return res.status(404).json({ message: 'Statistic not found' });
+    res.json(stat);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching statistic' });
+    res.status(500).json({ message: 'Error retrieving statistic' });
   }
 };
 
 exports.updateStatistic = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { queue_id, date, avg_wait_time, calls_count } = req.body;
-
-    const updatedStatistic = await statisticsService.updateStatistic(id, { queue_id, date, avg_wait_time, calls_count });
-    if (!updatedStatistic) {
-      return res.status(404).json({ message: 'Statistic not found' });
-    }
-    res.json(updatedStatistic);
+    const updated = await statisticsModel.updateStatistic(req.params.id, req.body);
+    res.json(updated);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error updating statistic' });
@@ -129,12 +130,8 @@ exports.updateStatistic = async (req, res) => {
 
 exports.deleteStatistic = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deleted = await statisticsService.deleteStatistic(id);
-    if (!deleted) {
-      return res.status(404).json({ message: 'Statistic not found' });
-    }
-    res.json({ message: 'Statistic deleted successfully' });
+    await statisticsModel.deleteStatistic(req.params.id);
+    res.status(204).send();
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error deleting statistic' });

@@ -1,5 +1,6 @@
+
+// // export default About;
 // import React from 'react';
-// import { Card, CardContent } from '@/components/ui/card';
 // import { Dumbbell, MapPin, Mail, Phone, Users, Zap, Heart } from 'lucide-react';
 
 // const About = () => {
@@ -61,8 +62,8 @@
 
 //       <div className="about-contact">
 //         <h2 className="section-title center">Contact Us</h2>
-//         <Card className="contact-card">
-//           <CardContent className="contact-content">
+//         <div className="contact-card">
+//           <div className="contact-content">
 //             <div className="contact-details">
 //               <div className="contact-item">
 //                 <div className="contact-icon">
@@ -104,16 +105,19 @@
 //                 title="Google Maps"
 //               ></iframe>
 //             </div>
-//           </CardContent>
-//         </Card>
+//           </div>
+//         </div>
 //       </div>
 //     </div>
 //   );
 // };
 
 // export default About;
+
+// About.jsx
 import React from 'react';
 import { Dumbbell, MapPin, Mail, Phone, Users, Zap, Heart } from 'lucide-react';
+// import './About.css';
 
 const About = () => {
   return (
@@ -225,3 +229,4 @@ const About = () => {
 };
 
 export default About;
+
