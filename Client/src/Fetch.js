@@ -56,7 +56,7 @@
 // export default Fetch;
 
 class Fetch {
-  constructor(baseURL = '/api') {  // שים לב לשינוי כאן
+  constructor(baseURL = 'http://localhost:3000') {
     this.baseURL = baseURL;
   }
 
