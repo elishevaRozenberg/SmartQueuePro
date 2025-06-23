@@ -34,21 +34,39 @@
 // export default StatisticsGraph;
 
 // StatisticsGraph.jsx
+// StatisticsGraph.jsx
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
-// import './StatisticsGraph.css';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
 
 const StatisticsGraph = ({ data }) => {
+  const formattedData = data.map(item => ({
+    date: item.date,
+    avgWait: item.avg_wait_time,
+    calls: item.calls_count
+  }));
+
   return (
     <div className="statistics-graph">
+      <h2>Queue Statistics by Date</h2>
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+        <BarChart data={formattedData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis />
           <Tooltip />
-          <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} dot={false} />
-        </LineChart>
+          <Legend />
+          <Bar dataKey="avgWait" name="Avg Wait (min)" fill="#8884d8" />
+          <Bar dataKey="calls" name="Total Calls" fill="#82ca9d" />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

@@ -189,45 +189,125 @@
 
 
 // QueuePage.jsx
-import React, { useEffect, useState } from 'react';
-import QueueItem from '../components/QueueItem';
+// QueuePage.jsx
+import React, { useEffect, useState, useContext } from 'react';
+import { UserContext } from '../context/UserContext';
 import QueueList from '../components/QueueList';
-// import './QueuePage.css';
+import AddQueueForm from '../components/AddQueueForm';
+import { useNavigate } from 'react-router-dom';
+import Fetch from '../Fetch';
+import QueueItem from '../components/QueueItem';
 
-const QueuePage = ({ user }) => {
+const api = new Fetch();
+
+export default function QueuePage() {
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+
   const [queues, setQueues] = useState([]);
-  const [role, setRole] = useState(user?.role || 'client');
+  const [userEntries, setUserEntries] = useState([]);
+  const [stats, setStats] = useState({ total: 0, active: 0, avgWait: 0 });
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchQueues = async () => {
-      try {
-        const res = await fetch('/queues');
-        const data = await res.json();
-        setQueues(data);
-      } catch (err) {
-        console.error('Failed to fetch queues:', err);
+    if (user) {
+      loadData();
+      const interval = setInterval(loadData, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const queuesData = await api.get('/queues');
+      setQueues(queuesData);
+
+      if (user.role.toLowerCase() === 'client') {
+        const entriesData = await api.get(`/calls/user/${user.id}`);
+        setUserEntries(entriesData);
+      } else {
+        setUserEntries([]);
       }
-    };
-    fetchQueues();
-  }, []);
+
+      const statsData = await api.get('/queues/stats');
+      setStats({
+        active: statsData.active || 0,
+        total: statsData.total || 0,
+        avgWait: statsData.avgWait || 0,
+      });
+
+      setError('');
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Failed to load queue data.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBookQueue = async (queueId) => {
+    try {
+      await api.post('/calls', { queue_id: queueId, user_id: user.id });
+      await loadData();
+    } catch (err) {
+      console.error('Error booking queue:', err);
+      setError('Failed to book the queue.');
+    }
+  };
+
+  const handleCancelBooking = async (queueId) => {
+    try {
+      const userCall = userEntries.find(c => c.queue_id === queueId);
+      if (!userCall) return;
+      await api.delete(`/calls/${userCall.id}`);
+      await loadData();
+    } catch (err) {
+      console.error('Error cancelling booking:', err);
+      setError('Failed to cancel booking.');
+    }
+  };
 
   return (
     <div className="queue-page">
-      <h1>Queue Overview</h1>
-      <div className="queue-grid">
-        {queues.map(queue => (
-          <QueueItem key={queue._id} queue={queue} role={role} />
-        ))}
-      </div>
+      <h1>Queues</h1>
+      {error && <p className="error">{error}</p>}
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <div className="queue-stats">
+            <p>Total Queues: {stats.total}</p>
+            <p>Active Queues: {stats.active}</p>
+            <p>Average Wait Time: {stats.avgWait} minutes</p>
+          </div>
 
-      {(role === 'employee' || role === 'admin') && (
-        <div className="management-section">
-          <h2>Manage Queues</h2>
-          <QueueList queues={queues} role={role} />
-        </div>
+          <div className="queue-items">
+            {queues.map(queue => (
+              <QueueItem
+                key={queue.id}
+                queue={queue}
+                userRole={user.role}
+                isBooked={userEntries.some(e => e.queue_id === queue.id)}
+                onBook={() => handleBookQueue(queue.id)}
+                onCancel={() => handleCancelBooking(queue.id)}
+              />
+            ))}
+          </div>
+
+          {(user.role === 'admin' || user.role === 'employee') && (
+            <>
+              <button onClick={() => setShowAddForm(!showAddForm)}>
+                {showAddForm ? 'Hide Add Queue Form' : 'Add New Queue'}
+              </button>
+              {showAddForm && <AddQueueForm onAdded={loadData} />}
+              <QueueList queues={queues} onUpdate={loadData} />
+            </>
+          )}
+        </>
       )}
     </div>
   );
-};
-
-export default QueuePage;
+}

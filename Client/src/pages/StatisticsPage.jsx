@@ -54,30 +54,45 @@
 // StatisticsPage.jsx
 import React, { useEffect, useState } from 'react';
 import StatisticsGraph from '../components/StatisticsGraph';
-// import './StatisticsPage.css';
+import Fetch from '../Fetch';
 
-const StatisticsPage = () => {
+const api = new Fetch();
+
+export default function StatisticsPage() {
   const [statistics, setStatistics] = useState([]);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchStatistics = async () => {
       try {
-        const res = await fetch('/statistics');
-        const data = await res.json();
+        const data = await api.get('/statistics');
         setStatistics(data);
+        setError('');
       } catch (err) {
-        console.error('Failed to fetch statistics:', err);
+        setError('Failed to load statistics.');
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchStatistics();
   }, []);
 
   return (
     <div className="statistics-page">
-      <h1>Current Statistics</h1>
-      <StatisticsGraph data={statistics} />
+      <h1>Statistics Overview</h1>
+      {error && <p className="error">{error}</p>}
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        statistics.length > 0 ? (
+          <StatisticsGraph data={statistics} />
+        ) : (
+          <p>No statistics available.</p>
+        )
+      )}
     </div>
   );
-};
+}
 
-export default StatisticsPage;
