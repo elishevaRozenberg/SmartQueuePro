@@ -289,11 +289,12 @@ export default function QueuePage() {
               <QueueItem
                 key={queue.id}
                 queue={queue}
-                userRole={user.role}
+                userRole={user?.role}
                 isBooked={userEntries.some(e => e.queue_id === queue.id)}
                 onBook={() => handleBookQueue(queue.id)}
                 onCancel={() => handleCancelBooking(queue.id)}
               />
+
             ))}
           </div>
 
