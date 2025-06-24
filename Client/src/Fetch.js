@@ -1,5 +1,5 @@
 class Fetch {
-  constructor(baseURL = 'http://localhost:3000/api') {
+  constructor(baseURL = '/api') {
     this.baseURL = baseURL;
   }
 
