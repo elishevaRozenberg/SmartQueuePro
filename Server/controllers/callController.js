@@ -2,12 +2,13 @@
 
 // exports.createCall = async (req, res) => {
 //   try {
-//     const { queue_id, number, user_id, status } = req.body;
-//     if (!queue_id || !number) {
-//       return res.status(400).json({ message: 'Missing required fields: queue_id or number' });
+//     const { queue_id, user_id } = req.body;
+
+//     if (!queue_id || !user_id) {
+//       return res.status(400).json({ message: 'Missing queue_id or user_id' });
 //     }
 
-//     const newCall = await callService.createCall({ queue_id, number, user_id, status });
+//     const newCall = await callService.createCall({ queue_id, user_id });
 //     res.status(201).json(newCall);
 //   } catch (error) {
 //     console.error(error);
@@ -80,7 +81,7 @@
 // exports.cancelCall = async (req, res) => {
 //   try {
 //     const { id } = req.params;
-//     const { user_id } = req.body; // אפשר גם לקחת את זה מה-token אם יש auth
+//     const { user_id } = req.body;
 
 //     const result = await callService.cancelCall(id, user_id);
 //     res.json(result);
@@ -90,11 +91,9 @@
 //   }
 // };
 
-// // פונקציה לקבלת כל הקריאות של משתמש מסוים
 // exports.getCallsByUserId = async (req, res) => {
 //   try {
 //     const userId = req.params.userId;
-//     // מניחים שיש בשירות פונקציה getCallsByUserId
 //     const calls = await callService.getCallsByUserId(userId);
 //     res.json(calls);
 //   } catch (error) {
@@ -103,17 +102,14 @@
 //   }
 // };
 
-
 const callService = require('../services/callService');
 
 exports.createCall = async (req, res) => {
   try {
     const { queue_id, user_id } = req.body;
-
     if (!queue_id || !user_id) {
-      return res.status(400).json({ message: 'Missing queue_id or user_id' });
+      return res.status(400).json({ message: 'Missing required fields: queue_id or user_id' });
     }
-
     const newCall = await callService.createCall({ queue_id, user_id });
     res.status(201).json(newCall);
   } catch (error) {
@@ -187,8 +183,7 @@ exports.completeCall = async (req, res) => {
 exports.cancelCall = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user_id } = req.body;
-
+    const { user_id } = req.body; // ניתן לקבל user_id מהטוקן במקום מהגוף
     const result = await callService.cancelCall(id, user_id);
     res.json(result);
   } catch (error) {
@@ -197,13 +192,18 @@ exports.cancelCall = async (req, res) => {
   }
 };
 
-exports.getCallsByUserId = async (req, res) => {
+// קריאה למספר הבא בתור (מעבר סטטוס ל"called")
+exports.callNext = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const calls = await callService.getCallsByUserId(userId);
-    res.json(calls);
+    const { queueId } = req.params;
+    const updatedCall = await callService.callNext(queueId);
+    if (!updatedCall) {
+      return res.status(404).json({ message: 'No waiting calls' });
+    }
+    res.json(updatedCall);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message || 'Error fetching calls by user ID' });
+    res.status(500).json({ message: error.message || 'Error calling next' });
   }
 };
+

@@ -48,8 +48,8 @@ const app = express();
 const checkAuth = require('./middlewares/checkAuth');
 const checkAbilities = require('./middlewares/checkAbilities');
 const dynamicCheckAbilities = require('./middlewares/dynamicCheckAbilities');
-// const emailVerify = require('./middlewares/emailVerify');
 const verification = require('./middlewares/verification');
+const auth = require('./middlewares/authMiddleware');
 
 // ראוטים
 const userRoutes = require('./routes/userRoutes');
@@ -58,36 +58,30 @@ const callRoutes = require('./routes/callRoutes');
 const statisticsRoutes = require('./routes/statisticsRoutes');
 const SignUpRoute = require('./routes/signUpRoute');
 const SignInRoute = require('./routes/signInRoute');
+const authRoutes = require('./routes/authRoutes');
 
-// פורט ברירת מחדל
+
+app.use('/auth', authRoutes);
+
+
 const PORT = process.env.PORT || 3000;
 
-// הגדרת session - חייב להיות לפני כל middleware שמשתמש ב-req.session
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your_secret_key', // החלף לסוד חזק בפרודקשן
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // true בפרודקשן עם HTTPS
+  cookie: { secure: false } 
 }));
 
-// JSON body parser
 app.use(express.json());
 
 
-// app.use(emailVerify);
-
-// הגדרת ראוטים
 app.use('/api/users', userRoutes);
 app.use('/api/users', SignUpRoute);
 app.use('/api/users', SignInRoute);
-
 app.use('/api/queues', queueRoutes);
 app.use('/api/calls', callRoutes);
 app.use('/api/statistics', statisticsRoutes);
-
-// אם רוצים להפעיל את המידלוורס של הרשאות באופן גלובלי, אפשר כאן:
-// app.use(checkAuth);
-// app.use(checkAbilities);
 
 // טיפול בנתיב לא קיים (404)
 app.use((req, res) => {
