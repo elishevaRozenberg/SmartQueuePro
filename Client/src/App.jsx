@@ -1,5 +1,7 @@
 
 // Root App.jsx
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import React, { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { UserContext } from './context/UserContext';

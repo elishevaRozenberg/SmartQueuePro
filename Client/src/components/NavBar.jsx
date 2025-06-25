@@ -18,38 +18,61 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-      {/* Left - Logo */}
-      <Link to="/" className="text-xl font-bold text-blue-600">
-        FitQueue
-      </Link>
+    <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+      <div className="container-fluid">
+        {/* Left - Logo */}
+        <Link to="/" className="navbar-brand text-primary font-weight-bold">
+          FitQueue
+        </Link>
 
-      {/* Center - Links */}
-      <div className="space-x-6 hidden md:flex">
-        <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
-        <Link to="/about" className="text-gray-700 hover:text-blue-600">About</Link>
-        <Link to="/queues" className="text-gray-700 hover:text-blue-600">Queues</Link>
-        <Link to="/statistics" className="text-gray-700 hover:text-blue-600">Statistics</Link>
-        {user?.role === 'Admin' && (
-          <Link to="/admin" className="text-gray-700 hover:text-blue-600">Admin Dashboard</Link>
-        )}
-      </div>
+        {/* Toggle Button for Mobile */}
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span className="navbar-toggler-icon"></span>
+        </button>
 
-      {/* Right - Profile/Login */}
-      <div className="relative">
-        {user ? (
-          <div className="group relative inline-block">
-            <div className="cursor-pointer">
-              <UserAvatar fullName={user.full_name} imageUrl={user.imageUrl} size={40} />
+        {/* Center - Links */}
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item">
+              <Link to="/" className="nav-link text-secondary hover:text-primary">Home</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/about" className="nav-link text-secondary hover:text-primary">About</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/queues" className="nav-link text-secondary hover:text-primary">Queues</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/statistics" className="nav-link text-secondary hover:text-primary">Statistics</Link>
+            </li>
+            {user?.role === 'Admin' && (
+              <li className="nav-item">
+                <Link to="/admin" className="nav-link text-secondary hover:text-primary">Admin Dashboard</Link>
+              </li>
+            )}
+          </ul>
+        </div>
+
+        {/* Right - Profile/Login */}
+        <div className="d-flex">
+          {user ? (
+            <div className="dropdown">
+              <button className="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <UserAvatar fullName={user.full_name} imageUrl={user.imageUrl} size={40} />
+              </button>
+              <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li>
+                  <Link to="/profile" className="dropdown-item">Profile</Link>
+                </li>
+                <li>
+                  <button onClick={handleLogout} className="dropdown-item">Log Out</button>
+                </li>
+              </ul>
             </div>
-            <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-              <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
-              <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100">Log Out</button>
-            </div>
-          </div>
-        ) : (
-          <Link to="/signin" className="text-blue-600 hover:underline font-medium">Sign In / Sign Up</Link>
-        )}
+          ) : (
+            <Link to="/signin" className="btn btn-link text-primary">Sign In / Sign Up</Link>
+          )}
+        </div>
       </div>
     </nav>
   );

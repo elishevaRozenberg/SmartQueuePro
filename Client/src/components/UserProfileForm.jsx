@@ -22,7 +22,7 @@ const UserProfilePage = () => {
     e.preventDefault();
 
     try {
-      const updatedUser = await api.put('/users/profile', form);
+      const updatedUser = await api.put('/api/users/profile', form);
       setUser(updatedUser);
       setMessage('Profile updated successfully!');
     } catch (err) {
@@ -31,66 +31,68 @@ const UserProfilePage = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-3xl font-semibold mb-6">Personal Information</h1>
-      <p className="mb-4 text-gray-600">Update your personal details here.</p>
+    <div className="container mt-5">
+      <h1 className="text-center text-3xl font-semibold mb-6">Personal Information</h1>
+      <p className="text-center mb-4 text-gray-600">Update your personal details here.</p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center space-x-4">
+      <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded shadow-sm bg-white">
+        <div className="d-flex justify-content-center mb-4">
           <UserAvatar fullName={form.full_name} imageUrl={form.imageUrl} size={80} />
         </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Profile Image URL</label>
+        <div className="mb-3">
+          <label className="form-label">Profile Image URL</label>
           <input
             type="text"
             name="imageUrl"
             value={form.imageUrl}
             onChange={handleChange}
             placeholder="https://example.com/avatar.jpg"
-            className="w-full px-4 py-2 border rounded"
+            className="form-control"
           />
         </div>
 
         {form.imageUrl && (
-          <div>
-            <label className="block mb-1 font-medium">Preview</label>
+          <div className="mb-3">
+            <label className="form-label">Preview</label>
             <img
               src={form.imageUrl}
               alt="Profile Preview"
-              className="w-32 h-32 rounded-full object-cover border"
+              className="w-32 h-32 rounded-circle object-cover border"
               onError={(e) => e.target.style.display = 'none'}
             />
           </div>
         )}
 
-        <div>
-          <label className="block mb-1 font-medium">Full Name</label>
+        <div className="mb-3">
+          <label className="form-label">Full Name</label>
           <input
             type="text"
             name="full_name"
             value={form.full_name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded"
+            className="form-control"
           />
         </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Email</label>
+        <div className="mb-3">
+          <label className="form-label">Email</label>
           <input
             type="email"
             name="email"
             value={form.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded"
+            className="form-control"
           />
         </div>
 
-        {message && <div className="text-green-600 font-medium">{message}</div>}
+        {message && <div className="text-success font-medium">{message}</div>}
 
-        <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded">
-          Update Profile
-        </button>
+        <div className="text-center">
+          <button type="submit" className="btn btn-primary w-100 py-2">
+            Update Profile
+          </button>
+        </div>
       </form>
     </div>
   );

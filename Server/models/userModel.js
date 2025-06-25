@@ -115,8 +115,13 @@ exports.createUser = async ({ username, email, full_name, passwordHash, role }) 
   const [result] = await pool.execute(
     `INSERT INTO users (username, email, full_name, password_hash, role)
      VALUES (?, ?, ?, ?, ?)`,
-    [username, email, full_name, passwordHash, role || 'client']
-  );
+ [
+      username || null,
+      email || null,
+      full_name || null,
+      passwordHash || null,
+      role || 'Client'
+    ]  );
   return result.insertId;
 };
 
@@ -157,3 +162,15 @@ exports.updateUser = async (id, newData) => {
   return await exports.getUserById(id);
 };
 
+exports.getUserByPasswordAndUserName = async (username) => {
+  try {
+    // מבצע שאילתה לקבלת מידע על המשתמש
+    const sql = `SELECT password_hash AS password, email, full_name AS name, username, id, role
+                 FROM users WHERE username = ?`;
+    const [rows] = await pool.execute(sql, [username]);
+    const user = rows[0] || null;
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};

@@ -63,17 +63,23 @@
 // HomePage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-// import './HomePage.css';
 
 const HomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="home-page">
-      <section className="welcome-section">
-        <h1>Welcome to SmartQueue</h1>
-        <p>Plan and manage your gym appointments with ease and efficiency.</p>
-        <button onClick={() => navigate('/queues')}>Go to Queues</button>
+    <div className="container-fluid bg-light py-5">
+      <section className="text-center">
+        <h1 className="display-4 text-primary font-weight-bold mb-4">Welcome to SmartQueue</h1>
+        <p className="lead text-muted mb-5">
+          Plan and manage your gym appointments with ease and efficiency.
+        </p>
+        <button
+          onClick={() => navigate('/queues')}
+          className="btn btn-primary btn-lg rounded-pill px-4 py-2"
+        >
+          Go to Queues
+        </button>
       </section>
     </div>
   );

@@ -24,7 +24,8 @@ const {
   deleteCall,
   completeCall,
   cancelCall,
-  callNext
+  callNext,
+  getCallsByUserId
 } = require('../controllers/callController');
 
 // רשימת מסלולי calls:
@@ -39,6 +40,7 @@ router.patch('/:queueId/next', callNext);
 // PATCH לניהול סטטוס קריאה
 router.patch('/:id/complete', completeCall);
 router.patch('/:id/cancel', cancelCall);
+router.get('/user/:userId', getCallsByUserId); 
 
 module.exports = router;
 

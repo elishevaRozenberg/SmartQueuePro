@@ -118,7 +118,7 @@ class CallService {
   }
 
   // מחיקת קריאה לפי מזהה (למשל מנהל בלבד)
-  async deleteCall(id) {
+  deleteCall = async(id)=> {
     const call = await callModel.getCallById(id);
     if (!call) throw new Error('Call not found');
 
@@ -131,14 +131,18 @@ class CallService {
     const call = await callModel.getCallById(id);
     return call;
   }
-
-}
-
-exports.getCallsByUserId = async (userId) => {
-  // כאן תבצע שאילתה לטבלה calls כדי לקבל את כל ה-calls של המשתמש הזה
-  // למשל: SELECT * FROM calls WHERE user_id = ?
-  return await callModel.getCallsByUserId(userId);
+  async getCallsByUserId(userId)  {
+  try {
+    // שליפת כל הקריאות של המשתמש על פי ה־userId
+    const sql = 'SELECT * FROM calls WHERE user_id = ?';
+    const [rows] = await pool.execute(sql, [userId]);
+    return rows;  // מחזירים את הקריאות שנמצאו
+  } catch (err) {
+    throw err;  // אם יש שגיאה, נזרוק אותה
+  }
 };
+}
+module.exports = CallService;
 
+const pool = require('../../db/connection'); // אם ה pool לא מיובא, ודא שהוא נמצא בקובץ
 
-module.exports = new CallService();

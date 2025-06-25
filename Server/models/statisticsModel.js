@@ -57,7 +57,7 @@
 
 
 // statisticsModel.js (MySQL)
-const pool = require('../../db/connection');
+const db = require('../../db/connection');
 
 exports.createStatistic = async ({ queue_id, date, avg_wait_time, calls_count }) => {
   const [result] = await db.execute(

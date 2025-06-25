@@ -1,11 +1,6 @@
 const userModel = require('../models/userModel');
 const bcrypt = require("bcrypt");
-
-
-
-// Create User
 exports.createUser = async (req, res) => {
-
   try {
     const { username, email, full_name, password } = req.body;
     if (!username || !email || !password) {
@@ -13,17 +8,34 @@ exports.createUser = async (req, res) => {
     }
 
     const role = req.body.role || 'Client';
-    const newUser = await userModel.createUser({
+    const passwordHash = bcrypt.hashSync(password, 10);
+
+    const newUserId = await userModel.createUser({
       username,
       email,
       full_name,
-      password,
+      passwordHash,
       role
     });
 
-    res.status(201).json(newUser);
+    // שמירה בסשן
+    req.session.user = {
+      id: newUserId,
+      username,
+      email,
+      role
+    };
+
+    // החזרה ל-Frontend
+    res.status(201).json({
+      id: newUserId,
+      username,
+      email,
+      role
+    });
+
   } catch (error) {
-    console.error(error);
+    console.error("CREATE USER ERROR:", error);
     res.status(500).json({ message: 'Error creating user' });
   }
 };

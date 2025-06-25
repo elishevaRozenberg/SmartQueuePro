@@ -1,171 +1,4 @@
-
-
-// // // components/AddQueueForm.jsx
-// // import React, { useState } from 'react';
-
-// // export default function AddQueueForm({ onAdd }) {
-// //   const [name, setName] = useState('');
-// //   const [description, setDescription] = useState('');
-// //   const [maxCapacity, setMaxCapacity] = useState(10);
-// //   const [error, setError] = useState('');
-
-// //   const handleSubmit = async (e) => {
-// //     e.preventDefault();
-
-// //     if (!name.trim() || maxCapacity < 1) {
-// //       setError('Please provide valid name and capacity.');
-// //       return;
-// //     }
-
-// //     try {
-// //       await onAdd({
-// //         name,
-// //         description,
-// //         max_capacity: maxCapacity
-// //       });
-
-// //       setName('');
-// //       setDescription('');
-// //       setMaxCapacity(10);
-// //       setError('');
-// //     } catch (err) {
-// //       setError('Failed to add queue.');
-// //     }
-// //   };
-
-// //   return (
-// //     <form onSubmit={handleSubmit} className="bg-white shadow-md p-4 rounded mb-6">
-// //       <h2 className="text-lg font-semibold mb-4">New Queue</h2>
-
-// //       {error && <p className="text-red-600 mb-2">{error}</p>}
-
-// //       <div className="mb-4">
-// //         <label className="block text-sm text-slate-700 mb-1">Queue Name</label>
-// //         <input
-// //           type="text"
-// //           value={name}
-// //           onChange={(e) => setName(e.target.value)}
-// //           className="w-full border rounded px-3 py-2"
-// //           required
-// //         />
-// //       </div>
-
-// //       <div className="mb-4">
-// //         <label className="block text-sm text-slate-700 mb-1">Description (optional)</label>
-// //         <textarea
-// //           value={description}
-// //           onChange={(e) => setDescription(e.target.value)}
-// //           className="w-full border rounded px-3 py-2"
-// //         />
-// //       </div>
-
-// //       <div className="mb-4">
-// //         <label className="block text-sm text-slate-700 mb-1">Max Capacity</label>
-// //         <input
-// //           type="number"
-// //           value={maxCapacity}
-// //           min={1}
-// //           onChange={(e) => setMaxCapacity(Number(e.target.value))}
-// //           className="w-full border rounded px-3 py-2"
-// //           required
-// //         />
-// //       </div>
-
-// //       <button
-// //         type="submit"
-// //         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-// //       >
-// //         Add Queue
-// //       </button>
-// //     </form>
-// //   );
-// // }
-
-
-// import React, { useState } from 'react';
-
-// export default function AddQueueForm({ onAdd }) {
-//   const [name, setName] = useState('');
-//   const [description, setDescription] = useState('');
-//   const [maxCapacity, setMaxCapacity] = useState(10);
-//   const [error, setError] = useState('');
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     if (!name.trim() || maxCapacity < 1) {
-//       setError('Please provide valid name and capacity.');
-//       return;
-//     }
-
-//     try {
-//       await onAdd({
-//         name,
-//         description,
-//         max_capacity: maxCapacity
-//       });
-
-//       setName('');
-//       setDescription('');
-//       setMaxCapacity(10);
-//       setError('');
-//     } catch (err) {
-//       setError('Failed to add queue.');
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit} className="bg-white shadow-md p-4 rounded mb-6">
-//       <h2 className="text-lg font-semibold mb-4">New Queue</h2>
-
-//       {error && <p className="text-red-600 mb-2">{error}</p>}
-
-//       <div className="mb-4">
-//         <label className="block text-sm text-slate-700 mb-1">Queue Name</label>
-//         <input
-//           type="text"
-//           value={name}
-//           onChange={(e) => setName(e.target.value)}
-//           className="w-full border rounded px-3 py-2"
-//           required
-//         />
-//       </div>
-
-//       <div className="mb-4">
-//         <label className="block text-sm text-slate-700 mb-1">Description (optional)</label>
-//         <textarea
-//           value={description}
-//           onChange={(e) => setDescription(e.target.value)}
-//           className="w-full border rounded px-3 py-2"
-//         />
-//       </div>
-
-//       <div className="mb-4">
-//         <label className="block text-sm text-slate-700 mb-1">Max Capacity</label>
-//         <input
-//           type="number"
-//           value={maxCapacity}
-//           min={1}
-//           onChange={(e) => setMaxCapacity(Number(e.target.value))}
-//           className="w-full border rounded px-3 py-2"
-//           required
-//         />
-//       </div>
-
-//       <button
-//         type="submit"
-//         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-//       >
-//         Add Queue
-//       </button>
-//     </form>
-//   );
-// }
-
-
-// AddQueueForm.jsx
 import React, { useState } from 'react';
-// import './AddQueueForm.css';
 
 const AddQueueForm = ({ onQueueAdded }) => {
   const [formData, setFormData] = useState({ name: '', description: '', estimatedWait: '' });
@@ -180,7 +13,7 @@ const AddQueueForm = ({ onQueueAdded }) => {
       const response = await fetch('/queues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
       const data = await response.json();
       if (onQueueAdded) onQueueAdded(data);
@@ -191,36 +24,48 @@ const AddQueueForm = ({ onQueueAdded }) => {
   };
 
   return (
-    <form className="add-queue-form" onSubmit={handleSubmit}>
-      <h2>Create New Queue</h2>
-      <input
-        type="text"
-        name="name"
-        placeholder="Queue Name"
-        value={formData.name}
-        onChange={handleChange}
-        required
-      />
-      <input
-        type="text"
-        name="description"
-        placeholder="Description"
-        value={formData.description}
-        onChange={handleChange}
-        required
-      />
-      <input
-        type="number"
-        name="estimatedWait"
-        placeholder="Estimated Wait (minutes)"
-        value={formData.estimatedWait}
-        onChange={handleChange}
-        required
-      />
-      <button type="submit">Add Queue</button>
-    </form>
+    <div className="container mt-5">
+      <form className="add-queue-form p-4 border rounded shadow-sm" onSubmit={handleSubmit}>
+        <h2 className="text-center mb-4">Create New Queue</h2>
+        <div className="mb-3">
+          <input
+            type="text"
+            name="name"
+            className="form-control"
+            placeholder="Queue Name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="text"
+            name="description"
+            className="form-control"
+            placeholder="Description"
+            value={formData.description}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="number"
+            name="estimatedWait"
+            className="form-control"
+            placeholder="Estimated Wait (minutes)"
+            value={formData.estimatedWait}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="text-center">
+          <button type="submit" className="btn btn-primary btn-lg">Add Queue</button>
+        </div>
+      </form>
+    </div>
   );
 };
 
 export default AddQueueForm;
-

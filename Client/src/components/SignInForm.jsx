@@ -1,9 +1,6 @@
 import React, { useState, useContext } from 'react';
-import Fetch from '../Fetch';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-
-const api = new Fetch();
 
 export default function SignInForm() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -16,80 +13,59 @@ export default function SignInForm() {
     setError('');
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const user = await api.post('/users/signin', form);
-      setUser(user);
-      if (user.role === 'Admin') {
-        navigate('/admin');
-      } else if (user.role === 'Secretary') {
-        navigate('/queues');
-      } else {
-        navigate('/');
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch('/api/users/signin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+      credentials: 'include', // חשוב מאוד – מאפשר שליחת session cookie!
+    });
+
+    if (!response.ok) {
+      let message = 'Sign in failed';
+      try {
+        const errData = await response.json(); // ננסה לקרוא את ה־JSON
+        if (errData?.message) message = errData.message; // אם יש הודעת שגיאה נשתמש בה
+      } catch (_) {
+        // אם התגובה לא הייתה JSON – לא נעשה כלום
       }
-    } catch (err) {
-      setError(err.message);
+      throw new Error(message);
     }
-  };
+
+    const user = await response.json(); // זה בטוח JSON תקף
+    setUser(user);
+    navigate(user.role === 'Admin' ? '/admin' : user.role === 'Secretary' ? '/queues' : '/');
+  } catch (err) {
+    setError(err.message || 'Unexpected error');
+  }
+};
+
+
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input name="username" value={form.username} onChange={handleChange} required
-        className="w-full px-4 py-2 border rounded" placeholder="Username or Email" />
-      <input type="password" name="password" value={form.password} onChange={handleChange} required
-        className="w-full px-4 py-2 border rounded" placeholder="Password" />
-      {error && <div className="text-red-500">{error}</div>}
-      <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Sign In</button>
+    <form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm">
+      <h2 className="mb-3 text-center">Sign In</h2>
+      <input
+        className="form-control mb-2"
+        name="username"
+        placeholder="Username or Email"
+        value={form.username}
+        onChange={handleChange}
+        required
+      />
+      <input
+        className="form-control mb-3"
+        type="password"
+        name="password"
+        placeholder="Password"
+        value={form.password}
+        onChange={handleChange}
+        required
+      />
+      {error && <div className="text-danger mb-2">{error}</div>}
+      <button type="submit" className="btn btn-primary w-100">Sign In</button>
     </form>
   );
 }
-
-
-// // SignInForm.jsx
-// import React, { useState, useContext } from 'react';
-// import Fetch from '../Fetch';
-// import { useNavigate } from 'react-router-dom';
-// import { UserContext } from '../context/UserContext';
-
-// const api = new Fetch();
-
-// export default function SignInForm() {
-//   const [form, setForm] = useState({ username: '', password: '' });
-//   const [error, setError] = useState('');
-//   const navigate = useNavigate();
-//   const { setUser } = useContext(UserContext);
-
-//   const handleChange = (e) => {
-//     setForm({ ...form, [e.target.name]: e.target.value });
-//     setError('');
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const user = await api.post('/users/signin', form);
-//       setUser(user);
-//       if (user.role === 'Admin') {
-//         navigate('/admin');
-//       } else if (user.role === 'Secretary') {
-//         navigate('/queues');
-//       } else {
-//         navigate('/');
-//       }
-//     } catch (err) {
-//       setError(err.message);
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit} className="space-y-4">
-//       <input name="username" value={form.username} onChange={handleChange} required
-//         className="w-full px-4 py-2 border rounded" placeholder="Username" />
-//       <input type="password" name="password" value={form.password} onChange={handleChange} required
-//         className="w-full px-4 py-2 border rounded" placeholder="Password" />
-//       {error && <div className="text-red-500">{error}</div>}
-//       <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Sign In</button>
-//     </form>
-//   );
-// }
