@@ -33,18 +33,32 @@ exports.getQueueById = async (id) => {
 };
 
 // Update Queue
+// Update Queue - make sure to handle undefined values
 exports.updateQueue = async (id, { name, description, location }) => {
-  const [result] = await pool.execute(
-    `UPDATE queues SET name = ?, description = ?, location = ? WHERE id = ?`,
-    [name, description, location, id]
-  );
+  try {
+    // אם שדה לא קיים, נחליף אותו ב-null או ערך ברירת מחדל
+    name = name || null;
+    description = description || null;
+    location = location || null;
 
-  if (result.affectedRows === 0) {
-    return null;
+    // עכשיו, נוודא שכולם נכונים ולא undefined
+    const [result] = await pool.execute(
+      `UPDATE queues SET name = ?, description = ?, location = ? WHERE id = ?`,
+      [name, description, location, id]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error('Queue not found');
+    }
+
+    // מחזירים את התור המעודכן
+    return await exports.getQueueById(id);
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error updating queue');
   }
-
-  return exports.getQueueById(id);
 };
+
 
 // Delete Queue
 exports.deleteQueue = async (id) => {

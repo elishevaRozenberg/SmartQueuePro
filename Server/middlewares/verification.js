@@ -30,36 +30,6 @@ const checkPassword = (req, res, next) => {
   next();
 };
 
-// const checkUserExists = async (req, res, next) => {
-//   const { username, email } = req.body;
-
-//   try {
-//     const [rows] = await pool.execute(
-//       'SELECT username, email FROM users WHERE username = ? OR email = ?',
-//       [username, email]
-//     );
-
-//     if (rows.length > 0) {
-//       const taken = {
-//         username: rows.some(u => u.username === username),
-//         email: rows.some(u => u.email === email),
-//       };
-
-//       let message = '';
-//       if (taken.username && taken.email) message = 'User already exist';
-//       else if (taken.username) message = 'Username already exists';
-//       else message = 'User already exists';
-
-//       return res.status(400).json({ message });
-//     }
-//     next();
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-
 const checkUserExists = async (req, res, next) => {
   const { username, email } = req.body;
   const userId = req.params.id ? parseInt(req.params.id) : null;

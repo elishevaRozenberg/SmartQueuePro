@@ -40,3 +40,9 @@
 .read-the-docs {
   color: #888;
 }
+.navbar {
+  width: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
+}

@@ -16,6 +16,8 @@ export default function QueuePage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);  // כפתור למעבר למסך עדכון
+  const [queueToUpdate, setQueueToUpdate] = useState(null); // כדי לדעת איזה תור לעדכן
 
   useEffect(() => {
     if (!user) {
@@ -31,13 +33,10 @@ export default function QueuePage() {
     try {
       setIsLoading(true);
       const queuesData = await api.get('/api/queues');
-      console.log('Queues data:', queuesData);  // Debugging
-
       setQueues(queuesData);
 
       if (user?.role?.toLowerCase() === 'client') {
         const entries = await api.get(`/api/calls/user/${user.id}`);
-        console.log('User entries:', entries);  // Debugging
         setUserEntries(entries || []);
       } else {
         setUserEntries([]);
@@ -53,7 +52,6 @@ export default function QueuePage() {
 
   const handleBookQueue = async (queueId) => {
     try {
-      console.log('Booking queue ID:', queueId);  // Debugging
       await api.post('/api/calls', { queue_id: queueId, user_id: user.id });
       await loadData();
     } catch (err) {
@@ -63,7 +61,6 @@ export default function QueuePage() {
 
   const handleCancelBooking = async (queueId) => {
     try {
-      console.log('Cancel booking for queue ID:', queueId);  // Debugging
       const call = userEntries.find(c => c.queue_id === queueId);
       if (!call) return;
       await api.delete(`/api/calls/${call.id}`);
@@ -73,34 +70,28 @@ export default function QueuePage() {
     }
   };
 
-  const handleCallNext = async (queueId) => {
+  const handleUpdateQueue = async (queueId, updatedQueueData) => {
     try {
-      console.log('Calling next user for queue ID:', queueId);  // Debugging
-      await api.patch(`/api/calls/${queueId}/next`);
+      await api.put(`/api/queues/${queueId}`, updatedQueueData); // קריאה לעדכון תור
       await loadData();
+      setShowUpdateForm(false); // סגירת טופס עדכון אחרי העדכון
     } catch (err) {
-      setError('Failed to call next person.');
-    }
-  };
-
-  const handleToggleQueue = async (queueId) => {
-    try {
-      console.log('Toggling queue status for queue ID:', queueId);  // Debugging
-      await api.put(`/api/queues/${queueId}/toggle`);
-      await loadData();
-    } catch (err) {
-      setError('Failed to toggle queue status.');
+      setError('Failed to update the queue.');
     }
   };
 
   const handleDeleteQueue = async (queueId) => {
     try {
-      console.log('Deleting queue ID:', queueId);  // Debugging
       await api.delete(`/api/queues/${queueId}`);
       await loadData();
     } catch (err) {
-      setError('Failed to delete queue.');
+      setError('Failed to delete the queue.');
     }
+  };
+
+  const handleShowUpdateForm = (queue) => {
+    setQueueToUpdate(queue);  // הצגת הנתונים של התור שברצונך לעדכן
+    setShowUpdateForm(true);  // שינוי מצב כדי להציג את טופס העדכון
   };
 
   if (isLoading) return <div className="text-center p-4">Loading...</div>;
@@ -124,11 +115,36 @@ export default function QueuePage() {
         </>
       )}
 
+      {user.role === 'secretary' && (
+        <>
+          <button onClick={() => setShowAddForm(prev => !prev)} className="btn btn-success mb-3">
+            {showAddForm ? 'Cancel' : 'Add New Queue'}
+          </button>
+          {showAddForm && <AddQueueForm onAdded={loadData} />}
+          <QueueList queues={queues} onUpdate={loadData} />
+        </>
+      )}
+
       {/* תצוגת תורים ללקוח */}
       {user.role.toLowerCase() === 'client' && (
         <div className="mb-4">
           <h4>Active Queues: {queues.filter(q => q.is_active).length}</h4>
           <h5>Your Bookings: {userEntries.length}</h5>
+        </div>
+      )}
+
+      {/* טופס עדכון תור */}
+      {showUpdateForm && queueToUpdate && (
+        <div>
+          <h3>Update Queue</h3>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdateQueue(queueToUpdate.id, { name: e.target.name.value, description: e.target.description.value });
+          }}>
+            <input name="name" defaultValue={queueToUpdate.name} className="form-control mb-2" required />
+            <input name="description" defaultValue={queueToUpdate.description} className="form-control mb-2" required />
+            <button type="submit" className="btn btn-primary">Update Queue</button>
+          </form>
         </div>
       )}
 
@@ -144,6 +160,7 @@ export default function QueuePage() {
             onStart={() => handleCallNext(queue.id)}
             onPause={() => handleToggleQueue(queue.id)}
             onDelete={() => handleDeleteQueue(queue.id)}
+            onUpdate={() => handleShowUpdateForm(queue)} // הפעלת עדכון
           />
         ))}
       </div>
