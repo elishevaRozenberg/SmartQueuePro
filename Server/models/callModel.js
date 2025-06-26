@@ -205,3 +205,15 @@ exports.getCallsByUserId = async (userId) => {
 };
 
 
+// שליפת כל הקריאות עבור תור מסוים (בהתאם ל־queue_id)
+exports.getCallsByQueueId = async (queueId) => {
+  try {
+    const [rows] = await pool.execute(
+      `SELECT * FROM calls WHERE queue_id = ?`, 
+      [queueId]  // עובר על ה־queue_id בתור השאילתה
+    );
+    return rows;  // מחזיר את כל הקריאות שנמצאו עבור ה־queue_id
+  } catch (err) {
+    throw err;  // אם יש שגיאה בשאילתה, מחזיר אותה
+  }
+};

@@ -142,7 +142,7 @@ class CallService {
   }
 };
 }
-module.exports = CallService;
+module.exports = new CallService();
 
 const pool = require('../../db/connection'); // אם ה pool לא מיובא, ודא שהוא נמצא בקובץ
 

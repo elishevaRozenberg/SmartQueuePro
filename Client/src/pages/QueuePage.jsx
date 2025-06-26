@@ -31,13 +31,13 @@ export default function QueuePage() {
     try {
       setIsLoading(true);
       const queuesData = await api.get('/api/queues');
-      console.log('Queues data:', queuesData);  // דיבוג
+      console.log('Queues data:', queuesData);  // Debugging
 
       setQueues(queuesData);
 
       if (user?.role?.toLowerCase() === 'client') {
         const entries = await api.get(`/api/calls/user/${user.id}`);
-        console.log('User entries:', entries);  // דיבוג
+        console.log('User entries:', entries);  // Debugging
         setUserEntries(entries || []);
       } else {
         setUserEntries([]);
@@ -53,7 +53,7 @@ export default function QueuePage() {
 
   const handleBookQueue = async (queueId) => {
     try {
-      console.log('Booking queue ID:', queueId);  // דיבוג
+      console.log('Booking queue ID:', queueId);  // Debugging
       await api.post('/api/calls', { queue_id: queueId, user_id: user.id });
       await loadData();
     } catch (err) {
@@ -63,7 +63,7 @@ export default function QueuePage() {
 
   const handleCancelBooking = async (queueId) => {
     try {
-      console.log('Cancel booking for queue ID:', queueId);  // דיבוג
+      console.log('Cancel booking for queue ID:', queueId);  // Debugging
       const call = userEntries.find(c => c.queue_id === queueId);
       if (!call) return;
       await api.delete(`/api/calls/${call.id}`);
@@ -75,7 +75,7 @@ export default function QueuePage() {
 
   const handleCallNext = async (queueId) => {
     try {
-      console.log('Calling next user for queue ID:', queueId);  // דיבוג
+      console.log('Calling next user for queue ID:', queueId);  // Debugging
       await api.patch(`/api/calls/${queueId}/next`);
       await loadData();
     } catch (err) {
@@ -85,7 +85,7 @@ export default function QueuePage() {
 
   const handleToggleQueue = async (queueId) => {
     try {
-      console.log('Toggling queue status for queue ID:', queueId);  // דיבוג
+      console.log('Toggling queue status for queue ID:', queueId);  // Debugging
       await api.put(`/api/queues/${queueId}/toggle`);
       await loadData();
     } catch (err) {
@@ -95,7 +95,7 @@ export default function QueuePage() {
 
   const handleDeleteQueue = async (queueId) => {
     try {
-      console.log('Deleting queue ID:', queueId);  // דיבוג
+      console.log('Deleting queue ID:', queueId);  // Debugging
       await api.delete(`/api/queues/${queueId}`);
       await loadData();
     } catch (err) {

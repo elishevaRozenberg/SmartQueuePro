@@ -3,7 +3,7 @@ const pool = require('../../db/connection');
 // Create Queue
 exports.createQueue = async ({ name, description, location }) => {
   const [result] = await pool.execute(
-    `INSERT INTO queues (name, description, location, is_active) VALUES (?, ?, ?, true)`,
+    `INSERT INTO queues (name, description, location) VALUES (?, ?, ?)`,
     [name, description, location]
   );
 

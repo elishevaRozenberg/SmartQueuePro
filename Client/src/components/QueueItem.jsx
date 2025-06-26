@@ -1,6 +1,6 @@
 import React from 'react';
 
-const QueueItem = ({ queue, role, isBooked, onBook, onCancel, onStart, onPause, onDelete }) => {
+const QueueItem = ({ queue, role, isBooked, onBook, onCancel, onStart, onPause, onDelete, onUpdate }) => {
   return (
     <div className="card border p-4 rounded shadow bg-white">
       <div className="card-body">
@@ -22,7 +22,7 @@ const QueueItem = ({ queue, role, isBooked, onBook, onCancel, onStart, onPause, 
 
           {role === 'client' && (
             isBooked ? (
-              <button onClick={onCancel} className="btn btn-danger">
+              <button onClick={onCancel} className="btn btn-danger" disabled={!queue.is_active}>
                 Cancel Booking
               </button>
             ) : (
@@ -34,14 +34,17 @@ const QueueItem = ({ queue, role, isBooked, onBook, onCancel, onStart, onPause, 
 
           {(role === 'employee' || role === 'admin') && (
             <div className="d-flex gap-2 mt-2 flex-wrap">
-              <button onClick={onStart} className="btn btn-warning">
+              <button onClick={onStart} className="btn btn-warning" disabled={!queue.is_active}>
                 Start
               </button>
-              <button onClick={onPause} className="btn btn-secondary">
+              <button onClick={onPause} className="btn btn-secondary" disabled={!queue.is_active}>
                 Pause
               </button>
-              <button onClick={onDelete} className="btn btn-danger">
+              <button onClick={onDelete} className="btn btn-danger" disabled={!queue.is_active}>
                 Delete
+              </button>
+              <button onClick={onUpdate} className="btn btn-info" disabled={!queue.is_active}>
+                Update
               </button>
             </div>
           )}

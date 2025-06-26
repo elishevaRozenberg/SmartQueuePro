@@ -91,19 +91,28 @@
 //   }
 // };
 
-// exports.getCallsByUserId = async (req, res) => {
-//   try {
-//     const userId = req.params.userId;
-//     const calls = await callService.getCallsByUserId(userId);
-//     res.json(calls);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: error.message || 'Error fetching calls by user ID' });
-//   }
-// };
+exports.getCallsByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const calls = await callService.getCallsByUserId(userId);
+    res.json(calls);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message || 'Error fetching calls by user ID' });
+  }
+};
 
 const callService = require('../services/callService');
-
+exports.getCallsByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const calls = await callService.getCallsByUserId(userId);
+    res.json(calls);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message || 'Error fetching calls by user ID' });
+  }
+};
 exports.createCall = async (req, res) => {
   try {
     const { queue_id, user_id } = req.body;
@@ -208,16 +217,16 @@ exports.callNext = async (req, res) => {
 };
 
 
-exports.getCallsByUserId = async (req, res) => {
-  try {
-    const { userId } = req.params;  // קבלת ה־userId מה־params
-    const calls = await callService.getCallsByUserId(userId);  // קריאה לשירות לשלוף את הקריאות
-    if (!calls || calls.length === 0) {
-      return res.status(404).json({ message: 'No calls found for this user' });
-    }
-    res.json(calls);  // מחזירים את הקריאות
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching calls for the user' });
-  }
-};
+// exports.getCallsByUserId = async (req, res) => {
+//   try {
+//     const { userId } = req.params;  // קבלת ה־userId מה־params
+//     const calls = await callService.getCallsByUserId(userId);  // קריאה לשירות לשלוף את הקריאות
+//     if (!calls || calls.length === 0) {
+//       return res.status(404).json({ message: 'No calls found for this user' });
+//     }
+//     res.json(calls);  // מחזירים את הקריאות
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Error fetching calls for the user' });
+//   }
+// };

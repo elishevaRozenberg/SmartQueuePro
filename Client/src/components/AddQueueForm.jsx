@@ -1,70 +1,52 @@
 import React, { useState } from 'react';
 
-const AddQueueForm = ({ onQueueAdded }) => {
-  const [formData, setFormData] = useState({ name: '', description: '', estimatedWait: '' });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+const AddQueueForm = ({ onAdded }) => {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/queues', {
+      await fetch('/api/queues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ name, description, location }),
       });
-      const data = await response.json();
-      if (onQueueAdded) onQueueAdded(data);
-      setFormData({ name: '', description: '', estimatedWait: '' });
+      onAdded();
     } catch (err) {
-      console.error('Failed to add queue:', err);
+      console.error('Error adding queue', err);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <form className="add-queue-form p-4 border rounded shadow-sm" onSubmit={handleSubmit}>
-        <h2 className="text-center mb-4">Create New Queue</h2>
-        <div className="mb-3">
-          <input
-            type="text"
-            name="name"
-            className="form-control"
-            placeholder="Queue Name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="text"
-            name="description"
-            className="form-control"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="number"
-            name="estimatedWait"
-            className="form-control"
-            placeholder="Estimated Wait (minutes)"
-            value={formData.estimatedWait}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="text-center">
-          <button type="submit" className="btn btn-primary btn-lg">Add Queue</button>
-        </div>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit} className="form-inline">
+      <input 
+        type="text" 
+        className="form-control mb-2" 
+        placeholder="Queue Name" 
+        value={name}
+        onChange={e => setName(e.target.value)} 
+        required 
+      />
+      <input 
+        type="text" 
+        className="form-control mb-2" 
+        placeholder="Queue Description"
+        value={description}
+        onChange={e => setDescription(e.target.value)} 
+        required 
+      />
+      <input 
+        type="text" 
+        className="form-control mb-2" 
+        placeholder="Location"
+        value={location}
+        onChange={e => setLocation(e.target.value)} 
+        required 
+      />
+      <button type="submit" className="btn btn-primary">Add Queue</button>
+    </form>
   );
 };
 
