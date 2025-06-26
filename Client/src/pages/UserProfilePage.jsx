@@ -6,7 +6,7 @@ const UserManagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch('/users');
+        const res = await fetch('/api/users');
         const data = await res.json();
         setUsers(data);
       } catch (err) {

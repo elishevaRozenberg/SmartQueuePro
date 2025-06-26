@@ -46,13 +46,22 @@ const NavBar = () => {
             <li className="nav-item">
               <Link to="/statistics" className="nav-link text-secondary hover:text-primary">Statistics</Link>
             </li>
-            {user?.role === 'Admin' && (
+            {user?.role === 'admin' && (
               <li className="nav-item">
                 <Link to="/admin" className="nav-link text-secondary hover:text-primary">Admin Dashboard</Link>
               </li>
             )}
+              <li className="nav-item">
+                <Link to="/profile" className="nav-link text-secondary hover:text-primary">Profile</Link>
+              </li>
+
+            
           </ul>
         </div>
+          {/* <button onClick={handleLogout} className="btn btn-link">
+                 <Link to="/profile" className="btn btn-link text-primar">Profile</Link>
+                </button>  */}
+
 
         {/* Right - Profile/Login */}
         <div className="d-flex">
